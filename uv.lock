@@ -649,6 +649,7 @@ dependencies = [
     { name = "pyarrow" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "requests" },
     { name = "streamlit" },
     { name = "tavily-python" },
 ]
@@ -674,6 +675,7 @@ requires-dist = [
     { name = "pyarrow", specifier = ">=26.0.1" },
     { name = "pydantic", specifier = ">=2.14.4" },
     { name = "pydantic-settings", specifier = ">=2.16.3" },
+    { name = "requests", specifier = ">=2.34.2" },
     { name = "streamlit", specifier = ">=1.67.0" },
     { name = "tavily-python", specifier = ">=0.8.5" },
 ]

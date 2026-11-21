@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from srag.config import NEWS_ALLOWED_DOMAINS, PROJECT_ROOT, VALID_UFS, Settings
+from srag.config import NEWS_ALLOWED_DOMAINS, PROJECT_ROOT, UF_NAMES, VALID_UFS, Settings
 
 
 @pytest.fixture
@@ -41,3 +41,8 @@ def test_api_keys_are_masked_when_printed():
 def test_invalid_temperature_is_rejected():
     with pytest.raises(ValidationError):
         Settings(_env_file=None, llm_temperature=2)
+
+
+def test_every_uf_has_a_state_name():
+    assert set(UF_NAMES) == set(VALID_UFS)
+    assert UF_NAMES["SP"] == "São Paulo"

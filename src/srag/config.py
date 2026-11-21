@@ -8,10 +8,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-VALID_UFS: tuple[str, ...] = (
-    "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", "PA",
-    "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO",
-)  # fmt: skip
+UF_NAMES: dict[str, str] = {
+    "AC": "Acre", "AL": "Alagoas", "AM": "Amazonas", "AP": "Amapá", "BA": "Bahia",
+    "CE": "Ceará", "DF": "Distrito Federal", "ES": "Espírito Santo", "GO": "Goiás",
+    "MA": "Maranhão", "MG": "Minas Gerais", "MS": "Mato Grosso do Sul", "MT": "Mato Grosso",
+    "PA": "Pará", "PB": "Paraíba", "PE": "Pernambuco", "PI": "Piauí", "PR": "Paraná",
+    "RJ": "Rio de Janeiro", "RN": "Rio Grande do Norte", "RO": "Rondônia", "RR": "Roraima",
+    "RS": "Rio Grande do Sul", "SC": "Santa Catarina", "SE": "Sergipe", "SP": "São Paulo",
+    "TO": "Tocantins",
+}  # fmt: skip
+VALID_UFS: tuple[str, ...] = tuple(UF_NAMES)
 
 # Fixed by the assessment brief: daily chart over 30 days, monthly chart over 12 months.
 DAILY_CHART_DAYS = 30
@@ -29,6 +35,31 @@ NEWS_ALLOWED_DOMAINS: tuple[str, ...] = (
     "paho.org",
     "who.int",
 )
+
+# International sources must mention Brazil (or the state); national ones are assumed Brazilian.
+NEWS_INTERNATIONAL_DOMAINS: tuple[str, ...] = ("bbc.com", "paho.org", "who.int")
+
+# Regex fragments (on accent-free, lower-case text) for news about SRAG and respiratory disease.
+NEWS_TOPIC_PATTERNS: tuple[str, ...] = (
+    r"srag",
+    r"sindrome respirat",
+    r"respirat",
+    r"influenza",
+    r"(?:info)?gripe",
+    r"gripal",
+    r"covid",
+    r"coronavirus",
+    r"sincicial",
+    r"pneumonia",
+    r"flu\b",
+)
+NEWS_COUNTRY_PATTERNS: tuple[str, ...] = (r"brasil", r"brazil")
+
+NEWS_BASE_QUERY = "síndrome respiratória aguda grave SRAG"
+NEWS_COUNTRY_NAME = "Brasil"
+NEWS_QUERY_MAX_CHARS = 200
+NEWS_TITLE_MAX_CHARS = 200
+NEWS_SNIPPET_MAX_CHARS = 500
 
 
 class Settings(BaseSettings):
@@ -51,8 +82,10 @@ class Settings(BaseSettings):
     agent_max_iterations: int = Field(default=8, gt=0)
     max_cost_usd_per_run: float = Field(default=0.10, gt=0)
 
-    news_max_results: int = Field(default=5, gt=0)
+    news_max_results: int = Field(default=10, gt=0)
+    news_max_items: int = Field(default=5, gt=0)
     news_days: int = Field(default=30, gt=0)
+    news_timeout_seconds: int = Field(default=20, gt=0)
 
     metric_window_days: int = Field(default=30, gt=0)
     report_lag_days: int = Field(default=7, ge=0)
