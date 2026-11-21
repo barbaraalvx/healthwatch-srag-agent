@@ -36,6 +36,7 @@ dev = [
 
 [tool.ruff]
 line-length = 100
+extend-exclude = ["docs"]
 target-version = "py312"
 
 [tool.ruff.lint]
