@@ -1,5 +1,5 @@
 [project]
-name = "srag-insights-agent"
+name = "healthwatch-srag-agent"
 version = "0.1.0"
 description = "Generative AI agent that reports on SRAG in Brazil using Open DATASUS data and real-time news."
 requires-python = ">=3.12"

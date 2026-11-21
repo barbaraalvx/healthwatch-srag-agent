@@ -1,4 +1,4 @@
-# srag-insights-agent
+# healthwatch-srag-agent
 
 Agentic AI that generates automated SRAG (Severe Acute Respiratory Syndrome) outbreak reports from Brazil's Open DATASUS data, combining key metrics, charts and real-time news context. Built with LangGraph, with audit logging and guardrails.
 
@@ -56,8 +56,8 @@ Formulas, windows and limitations: [`docs/METRICS.md`](docs/METRICS.md).
 Requirements: Python 3.12 (installed by uv), [uv](https://docs.astral.sh/uv/), an Anthropic API key and a Tavily API key.
 
 ```bash
-git clone https://github.com/<your-user>/srag-insights-agent.git
-cd srag-insights-agent
+git clone https://github.com/<your-user>/healthwatch-srag-agent.git
+cd healthwatch-srag-agent
 uv sync
 uv run playwright install chromium
 cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env

@@ -4,7 +4,7 @@ Guidance for Claude (and any contributor) working in this repository. Read this 
 
 ## 1. What this project is
 
-`srag-insights-agent` is a Proof of Concept for **Indicium HealthCare Inc.**: a Generative AI agent that produces an automated report on **SRAG (Síndrome Respiratória Aguda Grave / Severe Acute Respiratory Syndrome)** in Brazil.
+`healthwatch-srag-agent` is a Proof of Concept for **Indicium HealthCare Inc.**: a Generative AI agent that produces an automated report on **SRAG (Síndrome Respiratória Aguda Grave / Severe Acute Respiratory Syndrome)** in Brazil.
 
 The agent:
 1. Queries a local database built from the real **Open DATASUS SRAG** dataset and computes metrics.

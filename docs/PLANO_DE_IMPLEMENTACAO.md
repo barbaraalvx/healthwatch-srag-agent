@@ -1,4 +1,4 @@
-# Plano de implementação: srag-insights-agent
+# Plano de implementação: healthwatch-srag-agent
 
 Este é o roteiro completo, desde a instalação dos programas até a entrega. Siga as fases na ordem e só passe para a próxima quando todos os itens de "Pronto quando" estiverem marcados.
 
@@ -53,7 +53,7 @@ Este é o roteiro completo, desde a instalação dos programas até a entrega. S
 1. Crie uma conta em **console.anthropic.com**.
 2. Na área de cobrança (Billing), adicione créditos. O valor mínimo de compra aparece na tela. Para este projeto, a menor recarga disponível sobra. Pela minha estimativa, cada relatório custa menos de 1 centavo de dólar.
 3. **Defina um limite de gastos** (spend limit) na área de limites da conta. Isso evita surpresas.
-4. Na área **API Keys**, crie uma chave chamada `srag-insights-agent`. Ela só aparece uma vez, então copie-a direto para o arquivo `.env` (passo 0.5).
+4. Na área **API Keys**, crie uma chave chamada `healthwatch-srag-agent`. Ela só aparece uma vez, então copie-a direto para o arquivo `.env` (passo 0.5).
 
 ### 0.3 Chave da Tavily (notícias)
 
@@ -64,8 +64,8 @@ Este é o roteiro completo, desde a instalação dos programas até a entrega. S
 
 ```powershell
 cd $HOME\Documents
-git clone https://github.com/<seu-usuario>/srag-insights-agent.git
-cd srag-insights-agent
+git clone https://github.com/<seu-usuario>/healthwatch-srag-agent.git
+cd healthwatch-srag-agent
 ```
 
 ### 0.5 Copiar os documentos deste plano e criar o `.env`
@@ -105,7 +105,7 @@ cd srag-insights-agent
    ```powershell
    uv init --package --name srag --python 3.12
    ```
-   Ajuste o `pyproject.toml` para o nome de distribuição `srag-insights-agent` e o pacote em `src/srag`.
+   Ajuste o `pyproject.toml` para o nome de distribuição `healthwatch-srag-agent` e o pacote em `src/srag`.
 2. Instale as dependências:
    ```powershell
    uv add langgraph langchain-core langchain-anthropic tavily-python pandas pyarrow duckdb matplotlib jinja2 playwright pydantic pydantic-settings streamlit
