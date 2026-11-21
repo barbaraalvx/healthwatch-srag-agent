@@ -5,7 +5,7 @@ from datetime import date
 
 from srag.config import Settings
 from srag.data import schema
-from srag.data.repository import CaseRepository
+from srag.data.repository import CaseRepository, NoCasesError
 from srag.metrics.calculations import (
     MetricResult,
     Window,
@@ -16,10 +16,6 @@ from srag.metrics.calculations import (
     icu_admission_rate,
     mortality_rate,
 )
-
-
-class NoCasesError(LookupError):
-    """Raised when the selected scope has no cases at all."""
 
 
 @dataclass(frozen=True)

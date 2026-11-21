@@ -6,7 +6,7 @@ import pytest
 
 from srag.config import Settings
 from srag.data import schema
-from srag.data.repository import CaseRepository
+from srag.data.repository import CaseRepository, NoCasesError
 from srag.metrics.calculations import (
     CASE_GROWTH_RATE,
     COVID_VACCINATION_RATE,
@@ -15,7 +15,7 @@ from srag.metrics.calculations import (
     MORTALITY_RATE,
     Window,
 )
-from srag.metrics.snapshot import NoCasesError, compute_metrics
+from srag.metrics.snapshot import compute_metrics
 
 # Columns: case date, outcome, icu, covid vaccine, flu vaccine (None = missing).
 CASES = [
