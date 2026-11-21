@@ -87,3 +87,19 @@ Template:
 - Context: The dataset has no ICU bed capacity and no population denominator.
 - Decision: Report ICU admission proportion among SRAG cases and vaccination proportion among SRAG cases, clearly labelled as proxies in the report and README.
 - Alternatives: Join external sources (CNES beds, vaccination coverage APIs): more accurate but out of PoC scope; listed as future work.
+
+## D-011 — Data minimization: nine columns kept, ignored codes become missing, dedupe by notification number
+- Date: 2026-11-21
+- Status: Accepted
+- Context: The raw files have 194 columns (about 585,000 rows for 2025 + 2026), most of them identifying or unused. Real data has ignored codes (9), blanks and invalid values.
+- Decision: Keep only `DT_SIN_PRI`, `SG_UF`, age (turned into an age band), `UTI`, `EVOLUCAO`, `VACINA_COV`, `VACINA` and `CLASSI_FIN`. `NU_NOTIFIC` is read only to drop repeated notifications and is never stored. Code 9, blanks and unexpected values become missing, so they stay out of denominators (completeness is reported, see `docs/METRICS.md`). Dates outside 2019-01-01 .. run date are dropped. Details in `docs/DATA.md`.
+- Alternatives: Keep `DT_NOTIFIC`, `CS_SEXO`, `HOSPITAL` as the plan suggested (not used by any metric, so dropping them is safer). De-duplicate on whole rows (wrongly removes different patients that look alike: about 700 look-alike rows were found in an exploration with 18 columns, while `NU_NOTIFIC` has zero repeats).
+- Consequences: Smaller, safer file (about 2 MB). Adding a new metric that needs another column requires changing `data/schema.py` and re-running the preparation.
+
+## D-012 — DuckDB: in-memory table with file access disabled and locked configuration (refines D-004)
+- Date: 2026-11-21
+- Status: Accepted
+- Context: D-004 planned `read_only=True`, but that option only applies to `.duckdb` database files, and our source is a Parquet file.
+- Decision: Load the Parquet into an in-memory table, then run `SET enable_external_access = false` and `SET lock_configuration = true`. Queries are fixed and parameterized.
+- Alternatives: Write a `.duckdb` file in the preparation step and open it with `read_only=True` (one more artifact to keep in sync).
+- Consequences: The connection cannot read or write any file nor change its own settings (covered by a test). The whole table (about 600,000 rows, 2 MB) lives in memory, which is fine for this size.

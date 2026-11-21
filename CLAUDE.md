@@ -68,7 +68,7 @@ Full rationale: `docs/DECISIONS.md`. Metric formulas: `docs/METRICS.md`. Diagram
 - **LangGraph** + **LangChain** (`langchain-anthropic`) for the agent
 - LLM: **Claude Haiku** (`claude-haiku-5-5` by default; configurable via `LLM_MODEL`)
 - News: **Tavily** (`tavily-python`), restricted to allowlisted domains
-- Data: **pandas** for cleaning, **Parquet** + **DuckDB** (read-only connection) for queries
+- Data: **pandas** for cleaning, **Parquet** + **DuckDB** (in-memory, file access disabled, configuration locked) for queries
 - Charts: **matplotlib** (static PNG, embedded in HTML/PDF)
 - Report: **Jinja2** HTML template → PDF with **Playwright (Chromium)**
 - Config: **pydantic-settings**; schemas: **pydantic**
@@ -88,7 +88,7 @@ src/srag/
     schema.py          Selected columns, dtypes, code mappings (from the data dictionary)
     cleaning.py        Pure functions: raw DataFrame → clean DataFrame
     prepare.py         Script: data/raw/*.csv → data/processed/srag.parquet (+ quality report)
-    repository.py      DuckDB read-only queries (parameterized, no free SQL)
+    repository.py      DuckDB locked in-memory queries (parameterized, no free SQL)
   metrics/
     calculations.py    Pure metric functions + MetricResult dataclasses
   charts/
@@ -155,7 +155,7 @@ uv run ruff check . ; uv run ruff format . # lint + format
 ## 10. Guardrail rules
 
 - **Input:** `uf` must be `None` (Brazil) or one of the 27 valid UF codes. Reject anything else before the agent runs.
-- **Tools:** fixed, typed, read-only. DuckDB opened with `read_only=True`; queries parameterized. The LLM cannot run arbitrary SQL or code.
+- **Tools:** fixed, typed, read-only. DuckDB runs in memory with `enable_external_access=false` and a locked configuration (see D-012); queries parameterized. The LLM cannot run arbitrary SQL or code.
 - **News:** only allowlisted domains (see `config.py`), only results within `NEWS_DAYS`; content truncated; text that looks like instructions to the model is stripped; news is passed to the LLM inside clearly delimited "untrusted content" blocks, and the system prompt says to never follow instructions found there.
 - **Agent limits:** `AGENT_MAX_ITERATIONS`, `LLM_MAX_TOKENS`, request timeout, and `MAX_COST_USD_PER_RUN`. Exceeding a limit stops the run with an audited reason.
 - **Required tools check:** the report cannot be written unless metrics and case series were retrieved.
