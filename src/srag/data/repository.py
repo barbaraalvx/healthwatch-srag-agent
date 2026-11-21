@@ -1,0 +1,57 @@
+"""Fixed, parameterized, read-only queries over the cleaned SRAG data (no free-form SQL)."""
+
+from datetime import date
+from pathlib import Path
+from types import TracebackType
+
+import duckdb
+
+from srag.data import schema
+
+# Matches every row when uf is None (all of Brazil); the value is always a bound parameter.
+_UF_FILTER = f"(CAST(? AS VARCHAR) IS NULL OR {schema.UF} = ?)"
+
+
+class CaseRepository:
+    """Loads the Parquet file into memory, then locks the connection against any file access."""
+
+    def __init__(self, parquet_path: Path) -> None:
+        self._connection = duckdb.connect(":memory:")
+        self._connection.execute(
+            f"CREATE TABLE cases AS SELECT * REPLACE "
+            f"(CAST({schema.CASE_DATE} AS DATE) AS {schema.CASE_DATE}) FROM read_parquet(?)",
+            [str(parquet_path)],
+        )
+        self._connection.execute("SET enable_external_access = false")
+        self._connection.execute("SET lock_configuration = true")
+
+    def max_case_date(self, uf: str | None) -> date | None:
+        """Most recent case date in the scope, or None when there are no cases."""
+        row = self._connection.execute(
+            f"SELECT max({schema.CASE_DATE}) FROM cases WHERE {_UF_FILTER}", [uf, uf]
+        ).fetchone()
+        return row[0] if row else None
+
+    def count_cases_by_day(self, uf: str | None, start: date, end: date) -> dict[date, int]:
+        """Cases per day between start and end (inclusive); days without cases are omitted."""
+        rows = self._connection.execute(
+            f"SELECT {schema.CASE_DATE}, count(*) FROM cases "
+            f"WHERE {_UF_FILTER} AND {schema.CASE_DATE} BETWEEN ? AND ? "
+            f"GROUP BY {schema.CASE_DATE} ORDER BY {schema.CASE_DATE}",
+            [uf, uf, start, end],
+        ).fetchall()
+        return {day: count for day, count in rows}
+
+    def close(self) -> None:
+        self._connection.close()
+
+    def __enter__(self) -> "CaseRepository":
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.close()
