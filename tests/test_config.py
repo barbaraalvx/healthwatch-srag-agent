@@ -45,4 +45,4 @@ def test_invalid_temperature_is_rejected():
 
 def test_every_uf_has_a_state_name():
     assert set(UF_NAMES) == set(VALID_UFS)
-    assert UF_NAMES["SP"] == "SÃ£o Paulo"
+    assert UF_NAMES["SP"] == "São Paulo"
