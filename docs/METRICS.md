@@ -100,3 +100,11 @@ class MetricResult:
 ### What the real data shows about the limitations
 
 In that run, mortality completeness was only about 53% for Brazil and 58% for SP: roughly half of the recent cases still have no closed outcome. The mortality rate therefore describes only the cases already closed, and the report must say so.
+
+## 8. Chart implementation notes
+
+- `charts/series.py` builds the data (zero-filled, with incomplete periods flagged); `charts/plots.py` only draws it. Tests check the series, not the pixels.
+- Daily chart: the 30 days ending at the reference date D. Days after `D - REPORT_LAG_DAYS` are drawn in a lighter blue and listed in the legend as "Dados incompletos (atraso de notificação)".
+- Monthly chart: the 12 calendar months ending in the month of D. The month of D is drawn in the lighter blue ("Mês em andamento") unless D is the last day of that month.
+- One series per chart, so one hue (blue). Only the peak is labelled; the axis carries the other values.
+- Titles show the scope (Brasil or UF) and the reference date.
