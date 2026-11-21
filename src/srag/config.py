@@ -50,6 +50,7 @@ class Settings(BaseSettings):
     news_max_results: int = Field(default=5, gt=0)
     news_days: int = Field(default=30, gt=0)
 
+    metric_window_days: int = Field(default=30, gt=0)
     report_lag_days: int = Field(default=7, ge=0)
     min_denominator: int = Field(default=30, gt=0)
 
