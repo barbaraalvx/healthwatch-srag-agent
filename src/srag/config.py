@@ -13,6 +13,10 @@ VALID_UFS: tuple[str, ...] = (
     "PB", "PE", "PI", "PR", "RJ", "RN", "RO", "RR", "RS", "SC", "SE", "SP", "TO",
 )  # fmt: skip
 
+# Fixed by the assessment brief: daily chart over 30 days, monthly chart over 12 months.
+DAILY_CHART_DAYS = 30
+MONTHLY_CHART_MONTHS = 12
+
 NEWS_ALLOWED_DOMAINS: tuple[str, ...] = (
     "gov.br",
     "fiocruz.br",
