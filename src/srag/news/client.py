@@ -16,7 +16,13 @@ from srag.config import NEWS_ALLOWED_DOMAINS, Settings
 
 # "basic" depth costs 1 credit per search ("advanced" costs more).
 SEARCH_DEPTH = "basic"
-TOPIC = "news"
+# "news" topic only returned BBC items in a real test; "general" reaches the official sources
+# (Fiocruz, gov.br, Agência Brasil) but returns no publication dates. See D-013.
+TOPIC = "general"
+
+# Provider time ranges and the largest number of days each one covers.
+_TIME_RANGES = (("day", 1), ("week", 7), ("month", 31))
+_LONGEST_TIME_RANGE = "year"
 
 _TAVILY_ERRORS = (
     BadRequestError,
@@ -26,6 +32,14 @@ _TAVILY_ERRORS = (
     TavilyTimeoutError,
     requests.RequestException,
 )
+
+
+def time_range_for(days: int) -> str:
+    """Smallest provider time range that covers the given number of days."""
+    for name, limit in _TIME_RANGES:
+        if days <= limit:
+            return name
+    return _LONGEST_TIME_RANGE
 
 
 class NewsSearchError(RuntimeError):
@@ -52,7 +66,7 @@ class TavilyNewsSearcher:
                 query=query,
                 search_depth=SEARCH_DEPTH,
                 topic=TOPIC,
-                days=self._settings.news_days,
+                time_range=time_range_for(self._settings.news_days),
                 max_results=self._settings.news_max_results,
                 include_domains=list(NEWS_ALLOWED_DOMAINS),
                 include_answer=False,

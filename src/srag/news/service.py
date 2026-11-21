@@ -36,11 +36,11 @@ def search_news(
 ) -> NewsSearchResult:
     """Return trustworthy recent news; an empty list means nothing trustworthy was found."""
     full_query = build_query(query, uf)
-    sanitized = sanitize_results(
-        searcher.search(full_query), today, settings.news_days, settings.news_max_results
-    )
+    sanitized = sanitize_results(searcher.search(full_query), today, settings.news_days)
     relevant = filter_relevant(sanitized.items, uf)
     discarded = dict(sanitized.discarded)
     if len(relevant) < len(sanitized.items):
         discarded[DISCARDED_NOT_RELEVANT] = len(sanitized.items) - len(relevant)
-    return NewsSearchResult(full_query, relevant, discarded, sanitized.sentences_removed)
+    return NewsSearchResult(
+        full_query, relevant[: settings.news_max_items], discarded, sanitized.sentences_removed
+    )

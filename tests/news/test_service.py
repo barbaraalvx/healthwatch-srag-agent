@@ -29,7 +29,7 @@ def valid_result(number: int = 1) -> dict:
 
 @pytest.fixture
 def settings() -> Settings:
-    return Settings(_env_file=None, news_max_results=2)
+    return Settings(_env_file=None, news_max_items=2)
 
 
 def test_query_for_brazil_ends_with_the_country():
@@ -83,12 +83,19 @@ def test_search_returns_an_empty_tuple_when_nothing_is_trustworthy(settings):
     assert result.items == ()
 
 
-def test_search_limits_the_number_of_items(settings):
-    results = [valid_result(number) for number in range(5)]
+def test_item_limit_applies_after_the_relevance_filter(settings):
+    off_topic = [
+        valid_result(number) | {"title": "Futebol", "content": "Placar."} for number in range(2)
+    ]
+    on_topic = [valid_result(number) for number in range(2, 7)]
 
-    result = search_news("SRAG", None, FakeSearcher(results), settings, TODAY)
+    result = search_news("SRAG", None, FakeSearcher(off_topic + on_topic), settings, TODAY)
 
-    assert len(result.items) == settings.news_max_results
+    assert [item.url for item in result.items] == [
+        "https://g1.globo.com/saude/2",
+        "https://g1.globo.com/saude/3",
+    ]
+    assert result.discarded == {"not_relevant": 2}
 
 
 def test_search_discards_news_that_is_not_about_the_topic(settings):

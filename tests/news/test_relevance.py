@@ -53,6 +53,8 @@ def test_international_news_for_a_state_can_mention_the_state_instead():
         "Aumentam as internações por influenza no Sul",
         "Covid-19 volta a crescer, mostra boletim InfoGripe",
         "Vírus sincicial respiratório lota enfermarias pediátricas",
+        "InfoGripe: cinco estados têm nível de alerta",
+        "Vigilância Sentinela de Síndrome Gripal",
     ],
 )
 def test_national_news_about_the_topic_is_kept(title):

@@ -8,7 +8,6 @@ from srag.news.sanitizer import sanitize_results
 
 TODAY = date(2026, 11, 21)
 NEWS_DAYS = 30
-MAX_RESULTS = 5
 
 
 def raw_result(**overrides) -> dict:
@@ -22,8 +21,8 @@ def raw_result(**overrides) -> dict:
     return result
 
 
-def sanitize(*results: dict, max_results: int = MAX_RESULTS):
-    return sanitize_results(results, TODAY, NEWS_DAYS, max_results)
+def sanitize(*results: dict):
+    return sanitize_results(results, TODAY, NEWS_DAYS)
 
 
 def test_valid_result_is_kept_with_source_and_date():
@@ -99,10 +98,18 @@ def test_publication_date_must_be_inside_the_news_window(published, kept):
 
 
 @pytest.mark.parametrize("published", [None, "", "yesterday", 20261120])
-def test_result_without_a_readable_date_is_discarded(published):
+def test_result_without_a_readable_date_is_kept_with_an_unknown_date(published):
     result = sanitize(raw_result(published_date=published))
 
-    assert result.discarded == {sanitizer.DISCARDED_NO_DATE: 1}
+    assert result.items[0].published_at is None
+    assert result.discarded == {}
+
+
+def test_result_without_the_date_field_is_kept_with_an_unknown_date():
+    without_date = raw_result()
+    del without_date["published_date"]
+
+    assert sanitize(without_date).items[0].published_at is None
 
 
 @pytest.mark.parametrize(
@@ -181,12 +188,6 @@ def test_duplicate_urls_are_discarded():
 
     assert len(result.items) == 1
     assert result.discarded == {sanitizer.DISCARDED_DUPLICATE: 1}
-
-
-def test_results_are_limited_to_the_maximum():
-    results = [raw_result(url=f"https://g1.globo.com/{n}") for n in range(8)]
-
-    assert len(sanitize(*results, max_results=3).items) == 3
 
 
 def test_no_results_gives_an_empty_result_without_error():

@@ -45,7 +45,8 @@ NEWS_TOPIC_PATTERNS: tuple[str, ...] = (
     r"sindrome respirat",
     r"respirat",
     r"influenza",
-    r"gripe",
+    r"(?:info)?gripe",
+    r"gripal",
     r"covid",
     r"coronavirus",
     r"sincicial",
@@ -81,7 +82,8 @@ class Settings(BaseSettings):
     agent_max_iterations: int = Field(default=8, gt=0)
     max_cost_usd_per_run: float = Field(default=0.10, gt=0)
 
-    news_max_results: int = Field(default=5, gt=0)
+    news_max_results: int = Field(default=10, gt=0)
+    news_max_items: int = Field(default=5, gt=0)
     news_days: int = Field(default=30, gt=0)
     news_timeout_seconds: int = Field(default=20, gt=0)
 

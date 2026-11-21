@@ -17,7 +17,6 @@ ELLIPSIS = "…"
 
 DISCARDED_MALFORMED = "malformed"
 DISCARDED_DOMAIN = "domain_not_allowed"
-DISCARDED_NO_DATE = "missing_date"
 DISCARDED_OUT_OF_RANGE = "date_out_of_range"
 DISCARDED_DUPLICATE = "duplicate_url"
 DISCARDED_INJECTION_IN_TITLE = "injection_in_title"
@@ -102,7 +101,6 @@ def sanitize_results(
     raw_results: Iterable[dict[str, Any]],
     today: date,
     news_days: int,
-    max_results: int,
     allowed_domains: Iterable[str] = NEWS_ALLOWED_DOMAINS,
 ) -> SanitizationResult:
     """Keep only trustworthy results and report what was discarded and why."""
@@ -122,7 +120,7 @@ def sanitize_results(
         seen_urls.add(item.url)
         items.append(item)
         sentences_removed += removed
-    return SanitizationResult(tuple(items[:max_results]), dict(discarded), sentences_removed)
+    return SanitizationResult(tuple(items), dict(discarded), sentences_removed)
 
 
 def _build_item(
@@ -154,10 +152,11 @@ def _allowed_host(url: str, allowed: tuple[str, ...]) -> str:
     return host
 
 
-def _recent_date(value: object, today: date, news_days: int) -> date:
+def _recent_date(value: object, today: date, news_days: int) -> date | None:
+    """The publication date, or None when unknown; a known date must be inside the window."""
     published_at = parse_published_date(value)
     if published_at is None:
-        raise _RejectedError(DISCARDED_NO_DATE)
+        return None
     oldest = today - timedelta(days=news_days)
     newest = today + timedelta(days=FUTURE_TOLERANCE_DAYS)
     if not oldest <= published_at <= newest:

@@ -4,7 +4,7 @@ from tavily.errors import UsageLimitExceededError
 
 from srag.config import NEWS_ALLOWED_DOMAINS, Settings
 from srag.news import client
-from srag.news.client import NewsSearchError, TavilyNewsSearcher
+from srag.news.client import NewsSearchError, TavilyNewsSearcher, time_range_for
 
 
 class FakeTavilyClient:
@@ -30,7 +30,7 @@ def fake_tavily(monkeypatch):
 
 @pytest.fixture
 def settings() -> Settings:
-    return Settings(_env_file=None, tavily_api_key="fake-key", news_max_results=4, news_days=15)
+    return Settings(_env_file=None, tavily_api_key="fake-key", news_max_results=10, news_days=15)
 
 
 def test_search_asks_for_the_cheapest_restricted_news_search(settings):
@@ -40,15 +40,31 @@ def test_search_asks_for_the_cheapest_restricted_news_search(settings):
     assert FakeTavilyClient.last_search_kwargs == {
         "query": "SRAG Brasil",
         "search_depth": "basic",
-        "topic": "news",
-        "days": 15,
-        "max_results": 4,
+        "topic": "general",
+        "time_range": "month",
+        "max_results": 10,
         "include_domains": list(NEWS_ALLOWED_DOMAINS),
         "include_answer": False,
         "include_raw_content": False,
         "include_images": False,
         "timeout": settings.news_timeout_seconds,
     }
+
+
+@pytest.mark.parametrize(
+    ("days", "expected"),
+    [
+        (1, "day"),
+        (2, "week"),
+        (7, "week"),
+        (8, "month"),
+        (30, "month"),
+        (31, "month"),
+        (32, "year"),
+    ],
+)
+def test_time_range_covers_the_requested_number_of_days(days, expected):
+    assert time_range_for(days) == expected
 
 
 def test_missing_api_key_fails_before_any_request():
