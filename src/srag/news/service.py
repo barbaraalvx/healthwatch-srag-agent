@@ -6,7 +6,10 @@ from datetime import date
 from srag.config import NEWS_COUNTRY_NAME, NEWS_QUERY_MAX_CHARS, UF_NAMES, Settings
 from srag.news.client import NewsSearcher
 from srag.news.models import NewsItem
+from srag.news.relevance import filter_relevant
 from srag.news.sanitizer import sanitize_results
+
+DISCARDED_NOT_RELEVANT = "not_relevant"
 
 
 @dataclass(frozen=True)
@@ -36,6 +39,8 @@ def search_news(
     sanitized = sanitize_results(
         searcher.search(full_query), today, settings.news_days, settings.news_max_results
     )
-    return NewsSearchResult(
-        full_query, sanitized.items, sanitized.discarded, sanitized.sentences_removed
-    )
+    relevant = filter_relevant(sanitized.items, uf)
+    discarded = dict(sanitized.discarded)
+    if len(relevant) < len(sanitized.items):
+        discarded[DISCARDED_NOT_RELEVANT] = len(sanitized.items) - len(relevant)
+    return NewsSearchResult(full_query, relevant, discarded, sanitized.sentences_removed)

@@ -89,3 +89,12 @@ def test_search_limits_the_number_of_items(settings):
     result = search_news("SRAG", None, FakeSearcher(results), settings, TODAY)
 
     assert len(result.items) == settings.news_max_results
+
+
+def test_search_discards_news_that_is_not_about_the_topic(settings):
+    off_topic = valid_result(2) | {"title": "Futebol: resultado da rodada", "content": "Placar."}
+
+    result = search_news("SRAG", None, FakeSearcher([valid_result(1), off_topic]), settings, TODAY)
+
+    assert len(result.items) == 1
+    assert result.discarded == {"not_relevant": 1}

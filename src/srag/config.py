@@ -36,6 +36,24 @@ NEWS_ALLOWED_DOMAINS: tuple[str, ...] = (
     "who.int",
 )
 
+# International sources must mention Brazil (or the state); national ones are assumed Brazilian.
+NEWS_INTERNATIONAL_DOMAINS: tuple[str, ...] = ("bbc.com", "paho.org", "who.int")
+
+# Regex fragments (on accent-free, lower-case text) for news about SRAG and respiratory disease.
+NEWS_TOPIC_PATTERNS: tuple[str, ...] = (
+    r"srag",
+    r"sindrome respirat",
+    r"respirat",
+    r"influenza",
+    r"gripe",
+    r"covid",
+    r"coronavirus",
+    r"sincicial",
+    r"pneumonia",
+    r"flu\b",
+)
+NEWS_COUNTRY_PATTERNS: tuple[str, ...] = (r"brasil", r"brazil")
+
 NEWS_BASE_QUERY = "síndrome respiratória aguda grave SRAG"
 NEWS_COUNTRY_NAME = "Brasil"
 NEWS_QUERY_MAX_CHARS = 200
