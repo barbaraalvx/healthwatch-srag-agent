@@ -164,7 +164,7 @@ Sugestão inicial. Confirme no dicionário.
 Lê `data/raw/*.csv` só com as colunas selecionadas, limpa, grava `data/processed/srag.parquet` e escreve um **relatório de qualidade** (`data/processed/quality_report.json`: linhas lidas, descartadas por motivo, % de vazios por coluna, data mínima e máxima). Esse relatório também é evidência de governança.
 
 ### 2.5 Repositório de dados (`data/repository.py`)
-Funções com parâmetros fixos sobre o DuckDB aberto com `read_only=True`, como `count_cases_by_day(uf, start, end)`. Nada de SQL montado com texto vindo do LLM.
+Funções com parâmetros fixos sobre o DuckDB em memória, com acesso a arquivos desligado e configuração travada (veja D-012), como `count_cases_by_day(uf, start, end)`. Nada de SQL montado com texto vindo do LLM.
 
 **Pronto quando:**
 - [ ] `uv run python -m srag.data.prepare` gera o Parquet e o relatório de qualidade
