@@ -13,6 +13,10 @@ _UF_FILTER = f"(CAST(? AS VARCHAR) IS NULL OR {schema.UF} = ?)"
 _SCOPE_FILTER = f"{_UF_FILTER} AND {schema.CASE_DATE} BETWEEN ? AND ?"
 
 
+class NoCasesError(LookupError):
+    """Raised when the selected scope has no cases at all."""
+
+
 class CaseRepository:
     """Loads the Parquet file into memory, then locks the connection against any file access."""
 
@@ -61,6 +65,15 @@ class CaseRepository:
             [uf, uf, start, end],
         ).fetchall()
         return {day: count for day, count in rows}
+
+    def count_cases_by_month(self, uf: str | None, start: date, end: date) -> dict[date, int]:
+        """Cases per calendar month (keyed by its first day); months without cases are omitted."""
+        rows = self._connection.execute(
+            f"SELECT CAST(date_trunc('month', {schema.CASE_DATE}) AS DATE) AS month, count(*) "
+            f"FROM cases WHERE {_SCOPE_FILTER} GROUP BY month ORDER BY month",
+            [uf, uf, start, end],
+        ).fetchall()
+        return {month: count for month, count in rows}
 
     def close(self) -> None:
         self._connection.close()

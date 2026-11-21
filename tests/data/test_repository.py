@@ -83,3 +83,12 @@ def test_count_cases_by_code_rejects_columns_that_are_not_coded(
 ):
     with pytest.raises(ValueError):
         repository.count_cases_by_code(None, column, date(2026, 1, 1), date(2026, 1, 31))
+
+
+def test_count_cases_by_month_keys_each_month_by_its_first_day(repository: CaseRepository):
+    counts = repository.count_cases_by_month(None, date(2026, 1, 1), date(2026, 1, 31))
+
+    assert counts == {date(2026, 1, 1): 4}
+    assert repository.count_cases_by_month("RJ", date(2026, 1, 1), date(2026, 1, 31)) == {
+        date(2026, 1, 1): 1
+    }
