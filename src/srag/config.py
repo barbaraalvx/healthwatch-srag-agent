@@ -55,6 +55,18 @@ NEWS_TOPIC_PATTERNS: tuple[str, ...] = (
 )
 NEWS_COUNTRY_PATTERNS: tuple[str, ...] = (r"brasil", r"brazil")
 
+MEDICAL_DISCLAIMER = (
+    "Este relatório é informativo e não substitui avaliação, diagnóstico ou orientação de "
+    "profissionais de saúde. As métricas de UTI e de vacinação são aproximações calculadas "
+    "apenas entre casos notificados de SRAG."
+)
+REQUIRED_REPORT_SECTIONS: tuple[str, ...] = ("Resumo executivo", "Análise do cenário")
+# Text rounds numbers, so a percentage may differ from the computed value by this many points.
+NUMBER_TOLERANCE = 0.1
+
+AUDIT_MAX_TEXT_CHARS = 300
+AUDIT_MAX_ITEMS = 20
+
 NEWS_BASE_QUERY = "síndrome respiratória aguda grave SRAG"
 NEWS_COUNTRY_NAME = "Brasil"
 NEWS_QUERY_MAX_CHARS = 200
@@ -80,6 +92,7 @@ class Settings(BaseSettings):
     llm_price_output_per_mtok: float = Field(default=0.50, ge=0)
 
     agent_max_iterations: int = Field(default=8, gt=0)
+    run_timeout_seconds: int = Field(default=180, gt=0)
     max_cost_usd_per_run: float = Field(default=0.10, gt=0)
 
     news_max_results: int = Field(default=10, gt=0)
