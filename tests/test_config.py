@@ -11,6 +11,7 @@ def settings() -> Settings:
 
 def test_default_values_match_documented_defaults(settings: Settings):
     assert settings.llm_model == "claude-haiku-5-5"
+    assert settings.run_timeout_seconds == 180
     assert settings.metric_window_days == 30
     assert settings.report_lag_days == 7
     assert settings.min_denominator == 30

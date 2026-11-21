@@ -1,7 +1,6 @@
 """Keeps only news that is about SRAG / respiratory disease and about the selected area."""
 
 import re
-import unicodedata
 from collections.abc import Iterable
 
 from srag.config import (
@@ -12,14 +11,9 @@ from srag.config import (
 )
 from srag.news.models import NewsItem
 from srag.news.sanitizer import is_allowed_domain
+from srag.text import normalize
 
 _TOPIC = re.compile(r"\b(?:" + "|".join(NEWS_TOPIC_PATTERNS) + ")")
-
-
-def normalize(text: str) -> str:
-    """Lower-case text without accents, so 'Síndrome' and 'sindrome' match the same pattern."""
-    decomposed = unicodedata.normalize("NFKD", text)
-    return "".join(char for char in decomposed if not unicodedata.combining(char)).lower()
 
 
 def is_relevant(item: NewsItem, uf: str | None) -> bool:

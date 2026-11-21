@@ -3,7 +3,8 @@ from datetime import date
 import pytest
 
 from srag.news.models import NewsItem
-from srag.news.relevance import filter_relevant, is_relevant, normalize
+from srag.news.relevance import filter_relevant, is_relevant
+from srag.text import normalize
 
 
 def news(title: str, snippet: str = "Texto.", source: str = "g1.globo.com") -> NewsItem:
