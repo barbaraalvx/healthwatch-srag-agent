@@ -87,3 +87,16 @@ class MetricResult:
     unstable: bool
     note: str | None       # limitation text shown in the report
 ```
+
+## 7. Implementation notes
+
+- `value` is a percentage (0 to 100, or any sign for growth); `None` when undefined.
+- **Growth rate fields:** `numerator` = cases in the current window, `denominator` = cases in the previous window, `completeness` = 1 (every case is counted), `unstable` when the previous window has fewer than `MIN_DENOMINATOR` cases.
+- **Window size** comes from `METRIC_WINDOW_DAYS` (default 30), the lag from `REPORT_LAG_DAYS` (default 7).
+- `metrics/calculations.py` holds the pure formulas; `metrics/snapshot.py` reads the counts from the repository and returns all five metrics for one scope (`MetricsSnapshot`).
+- A scope without any case raises `NoCasesError`.
+- All values were cross-checked against an independent pandas calculation for Brazil and for SP (2026-11-21 data, reference date 2026-11-15, current window 2026-10-10 to 2026-11-08): all matched.
+
+### What the real data shows about the limitations
+
+In that run, mortality completeness was only about 53% for Brazil and 58% for SP: roughly half of the recent cases still have no closed outcome. The mortality rate therefore describes only the cases already closed, and the report must say so.

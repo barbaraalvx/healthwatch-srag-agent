@@ -10,6 +10,7 @@ from srag.data import schema
 
 # Matches every row when uf is None (all of Brazil); the value is always a bound parameter.
 _UF_FILTER = f"(CAST(? AS VARCHAR) IS NULL OR {schema.UF} = ?)"
+_SCOPE_FILTER = f"{_UF_FILTER} AND {schema.CASE_DATE} BETWEEN ? AND ?"
 
 
 class CaseRepository:
@@ -32,11 +33,30 @@ class CaseRepository:
         ).fetchone()
         return row[0] if row else None
 
+    def count_cases(self, uf: str | None, start: date, end: date) -> int:
+        """Total cases between start and end (inclusive)."""
+        row = self._connection.execute(
+            f"SELECT count(*) FROM cases WHERE {_SCOPE_FILTER}", [uf, uf, start, end]
+        ).fetchone()
+        return row[0] if row else 0
+
+    def count_cases_by_code(
+        self, uf: str | None, column: str, start: date, end: date
+    ) -> dict[int, int]:
+        """Cases per known code of a coded column; missing values are not counted."""
+        if column not in schema.VALID_CODES:
+            raise ValueError(f"Not a coded column: {column}")
+        rows = self._connection.execute(
+            f"SELECT {column}, count(*) FROM cases "
+            f"WHERE {_SCOPE_FILTER} AND {column} IS NOT NULL GROUP BY {column}",
+            [uf, uf, start, end],
+        ).fetchall()
+        return {code: count for code, count in rows}
+
     def count_cases_by_day(self, uf: str | None, start: date, end: date) -> dict[date, int]:
         """Cases per day between start and end (inclusive); days without cases are omitted."""
         rows = self._connection.execute(
-            f"SELECT {schema.CASE_DATE}, count(*) FROM cases "
-            f"WHERE {_UF_FILTER} AND {schema.CASE_DATE} BETWEEN ? AND ? "
+            f"SELECT {schema.CASE_DATE}, count(*) FROM cases WHERE {_SCOPE_FILTER} "
             f"GROUP BY {schema.CASE_DATE} ORDER BY {schema.CASE_DATE}",
             [uf, uf, start, end],
         ).fetchall()
