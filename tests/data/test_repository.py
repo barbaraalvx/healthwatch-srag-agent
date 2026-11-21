@@ -17,6 +17,7 @@ def repository(tmp_path: Path) -> CaseRepository:
                 ["2026-01-10", "2026-01-10", "2026-01-11", "2026-01-20"]
             ),
             schema.UF: ["SP", "RJ", "SP", "SP"],
+            schema.ICU: pd.array([1, 2, None, 1], dtype="Int8"),
         }
     )
     path = tmp_path / "srag.parquet"
@@ -62,3 +63,23 @@ def test_connection_cannot_read_files_or_change_settings(repository: CaseReposit
         connection.execute("SELECT * FROM read_csv('anything.csv')")
     with pytest.raises(duckdb.Error):
         connection.execute("SET enable_external_access = true")
+
+
+def test_count_cases_by_scope(repository: CaseRepository):
+    assert repository.count_cases(None, date(2026, 1, 10), date(2026, 1, 11)) == 3
+    assert repository.count_cases("SP", date(2026, 1, 10), date(2026, 1, 11)) == 2
+    assert repository.count_cases("AC", date(2026, 1, 1), date(2026, 1, 31)) == 0
+
+
+def test_count_cases_by_code_leaves_missing_values_out(repository: CaseRepository):
+    counts = repository.count_cases_by_code(None, schema.ICU, date(2026, 1, 1), date(2026, 1, 31))
+
+    assert counts == {1: 2, 2: 1}
+
+
+@pytest.mark.parametrize("column", [schema.UF, "icu; DROP TABLE cases", "unknown"])
+def test_count_cases_by_code_rejects_columns_that_are_not_coded(
+    repository: CaseRepository, column: str
+):
+    with pytest.raises(ValueError):
+        repository.count_cases_by_code(None, column, date(2026, 1, 1), date(2026, 1, 31))
