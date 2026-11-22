@@ -125,6 +125,7 @@ def test_manifest_has_config_provenance_status_and_totals(logger: AuditLogger, t
     info = ManifestInfo(
         uf="SP",
         model="claude-haiku-5-5",
+        effort="low",
         prompt_versions={"writer": "v1"},
         data_file=data_file,
         data_max_date=datetime(2026, 11, 15).date(),
@@ -138,6 +139,7 @@ def test_manifest_has_config_provenance_status_and_totals(logger: AuditLogger, t
     assert manifest["status"] == "completed"
     assert manifest["scope"] == "SP"
     assert manifest["model"] == "claude-haiku-5-5"
+    assert manifest["effort"] == "low"
     assert manifest["prompt_versions"] == {"writer": "v1"}
     assert manifest["data_file_sha256"] == hashlib.sha256(b"fake parquet content").hexdigest()
     assert manifest["data_max_date"] == "2026-11-15"

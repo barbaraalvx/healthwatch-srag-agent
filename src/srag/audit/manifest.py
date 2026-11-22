@@ -23,6 +23,7 @@ class ManifestInfo:
 
     uf: str | None
     model: str
+    effort: str | None = None
     prompt_versions: dict[str, str] = field(default_factory=dict)
     data_file: Path | None = None
     data_max_date: date | None = None
