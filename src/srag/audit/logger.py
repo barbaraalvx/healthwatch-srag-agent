@@ -85,6 +85,7 @@ class AuditLogger:
             "status": status,
             "scope": info.uf or "BR",
             "model": info.model,
+            "effort": info.effort,
             "prompt_versions": info.prompt_versions,
             "data_file_sha256": file_sha256(info.data_file) if info.data_file else None,
             "data_max_date": info.data_max_date,

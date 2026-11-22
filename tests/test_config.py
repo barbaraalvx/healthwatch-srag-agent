@@ -11,6 +11,7 @@ def settings() -> Settings:
 
 def test_default_values_match_documented_defaults(settings: Settings):
     assert settings.llm_model == "claude-haiku-5-5"
+    assert settings.llm_max_tokens == 4000
     assert settings.run_timeout_seconds == 180
     assert settings.metric_window_days == 30
     assert settings.report_lag_days == 7
@@ -39,9 +40,13 @@ def test_api_keys_are_masked_when_printed():
     assert settings.anthropic_api_key.get_secret_value() == "sk-ant-secret"
 
 
-def test_invalid_temperature_is_rejected():
+def test_invalid_effort_is_rejected():
     with pytest.raises(ValidationError):
-        Settings(_env_file=None, llm_temperature=2)
+        Settings(_env_file=None, llm_effort="max")
+
+
+def test_there_is_no_temperature_setting():
+    assert "llm_temperature" not in Settings.model_fields
 
 
 def test_every_uf_has_a_state_name():

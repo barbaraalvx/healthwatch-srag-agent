@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Generative AI agent that reports on SRAG in Brazil using Open DATASUS data and real-time news."
 requires-python = ">=3.12"
 dependencies = [
+    "anthropic>=2.12.0",
     "duckdb>=2.0.1",
     "jinja2>=3.1.6",
     "langchain-anthropic>=1.7.12",

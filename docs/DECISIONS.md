@@ -28,7 +28,7 @@ Template:
 - Date: 2026-11-21
 - Status: Accepted
 - Context: Need a reliable tool-calling model at low cost. Free tiers may use submitted data for training and have rate limits.
-- Decision: `claude-haiku-5-5` via `langchain-anthropic`, `temperature=0`. Model name comes from `LLM_MODEL` so it can be swapped.
+- Decision: `claude-haiku-5-5` via `langchain-anthropic` (no temperature: Haiku 5.5 rejects it, see D-016). Model name comes from `LLM_MODEL` so it can be swapped.
 - Alternatives: Gemini free tier (zero cost, but data may be used to improve products and rate limits are opaque); GPT mini (similar price).
 - Consequences: Paid usage, estimated at a fraction of a US cent per report. A spend limit is set in the Anthropic Console and `MAX_COST_USD_PER_RUN` caps each run.
 
@@ -129,3 +129,18 @@ Template:
 - Not checked (known limits): dates written in the text are not verified against the data windows; the direction of a change (up or down) is not verified; medical advice written in free text is not detected; a number that coincidentally equals another computed value passes. The writer prompt must ask for pt-BR format with one decimal place, because rounding to an integer can fall outside the tolerance. The disclaimer is fixed text appended by code before validation, so this check guards against removing it, not against the model forgetting it.
 - Alternatives: Asking an LLM to judge the text (extra cost, and the judge can be wrong); exact number matching (rejects normal rounding); logging raw inputs for debugging (risks secrets and sensitive data in logs).
 - Consequences: Deterministic checks that cost nothing per run and are fully unit tested (including deliberate-breakage checks). The 0.1 tolerance may reject some correct but loosely rounded texts, which triggers the single retry with feedback described in `CLAUDE.md`.
+
+## D-016 - Agent design: fixed scope, tool-calling model never sees news text, cost-first routing
+- Date: 2026-11-21
+- Status: Accepted (supersedes the temperature part of D-002)
+- Context: Phase 7 connects the LLM to the tools. The risks are prompt injection through news, the model changing the scope, runaway loops and cost.
+- Decision:
+  - Graph: `orchestrator <-> tools -> required_tools_check -> writer -> output_guardrail`, with one retry of the writer (feedback = the guardrail errors) and a template-only `fallback` after the second failure. A run stopped by a limit (iterations, cost, time) or by a model-provider error skips to the same fallback and is marked `stopped` with the reason. Metrics and charts are always produced by code, so even a stopped run returns them.
+  - The scope (UF) is fixed by the run. Tool schemas have no `uf` field, and any `uf` the model sends is ignored.
+  - The model that calls tools only receives counts and status lines. News text goes only to the writer, which has no tools, inside the `<untrusted_news>` block.
+  - If metrics, charts and news are all collected after the first tool round, the second orchestrator call is skipped (one LLM call less). If no news was found, the orchestrator may refine the query, within `NEWS_MAX_SEARCHES` (default 2, one Tavily credit each).
+  - The writer receives only aggregated values already formatted in pt-BR (one decimal, comma), the windows, the limitation notes and the news block. The medical disclaimer is appended by code before validation.
+  - Claude Haiku 5.5 rejects non-default sampling parameters, so the temperature setting was removed. Reasoning effort is configurable (`LLM_EFFORT`, default `low`) and recorded in the manifest. Thinking tokens are billed as output, so the cost is computed from the output token count reported by the API. No tool choice is forced (also not accepted by the newer models).
+  - Prompts are versioned files (`orchestrator_v1.md`, `writer_v1.md`); their names are recorded in each `llm_call` audit event.
+- Alternatives: A plain ReAct loop with the model choosing everything (harder to audit, can skip required steps); giving the orchestrator the news titles to judge relevance (a larger injection surface for the model that has tools); letting the model pick the UF (can drift to another state); always running a second orchestrator turn (one more paid call in the common case).
+- Consequences: A typical run costs two model calls (orchestrator and writer) and one news search. A refinement or a writer retry adds one call. The fixed scope means a question about two states needs two runs. The writer output is only as good as its prompt: the tolerance of 0.1 points in the output guardrail means it must copy the numbers as given, which the prompt demands. In the first real run a draft hit the 2,000-token cap in the middle of a link (reasoning tokens count as output). A draft that stopped because of the token limit is now rejected with an explicit reason and rewritten shorter, and the default cap is 4,000 tokens.

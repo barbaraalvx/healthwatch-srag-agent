@@ -166,7 +166,7 @@ uv run ruff check . ; uv run ruff format . # lint + format
 
 - Each run gets a `run_id` (UUID4) and folder `reports/<timestamp>_<run_id>/`.
 - `audit.jsonl`: one JSON object per event, with `run_id`, `timestamp`, `event_type` (node_start, node_end, tool_call, llm_call, guardrail, error), `node`, `inputs` (sanitized), `output_summary`, `model`, `prompt_version`, `tokens_in`, `tokens_out`, `cost_usd`, `duration_ms`, `decision`/`reason` where applicable.
-- `manifest.json`: run config (model, temperature, prompt versions, data file hash, data max date, git commit), final status and totals.
+- `manifest.json`: run config (model, effort, prompt versions, data file hash, data max date, git commit), final status and totals.
 - The report footer shows `run_id`, generation time, data reference date and model used.
 
 ## 12. Testing

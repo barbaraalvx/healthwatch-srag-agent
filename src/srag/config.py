@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -55,6 +56,11 @@ NEWS_TOPIC_PATTERNS: tuple[str, ...] = (
 )
 NEWS_COUNTRY_PATTERNS: tuple[str, ...] = (r"brasil", r"brazil")
 
+ORCHESTRATOR_PROMPT = "orchestrator_v1"
+WRITER_PROMPT = "writer_v1"
+WRITER_MAX_ATTEMPTS = 2  # the first draft plus one retry with feedback
+LLM_MAX_RETRIES = 1  # SDK retries on 429 and 5xx only; keep low to bound cost
+
 MEDICAL_DISCLAIMER = (
     "Este relatório é informativo e não substitui avaliação, diagnóstico ou orientação de "
     "profissionais de saúde. As métricas de UTI e de vacinação são aproximações calculadas "
@@ -85,8 +91,10 @@ class Settings(BaseSettings):
     tavily_api_key: SecretStr = SecretStr("")
 
     llm_model: str = "claude-haiku-5-5"
-    llm_temperature: float = Field(default=0, ge=0, le=1)
-    llm_max_tokens: int = Field(default=2000, gt=0)
+    # Claude Haiku 5.5 rejects non-default sampling parameters, so there is no temperature
+    # setting. Effort controls how much the model reasons (and how many tokens it bills).
+    llm_effort: Literal["low", "medium", "high"] = "low"
+    llm_max_tokens: int = Field(default=4000, gt=0)  # includes the model's reasoning tokens
     llm_timeout_seconds: int = Field(default=60, gt=0)
     llm_price_input_per_mtok: float = Field(default=0.10, ge=0)
     llm_price_output_per_mtok: float = Field(default=0.50, ge=0)
@@ -97,6 +105,8 @@ class Settings(BaseSettings):
 
     news_max_results: int = Field(default=10, gt=0)
     news_max_items: int = Field(default=5, gt=0)
+    # Each search spends one Tavily credit: one search plus at most one refinement by default.
+    news_max_searches: int = Field(default=2, gt=0)
     news_days: int = Field(default=30, gt=0)
     news_timeout_seconds: int = Field(default=20, gt=0)
 
