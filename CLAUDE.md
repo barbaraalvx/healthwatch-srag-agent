@@ -60,7 +60,7 @@ Every step ──► Audit logger (JSONL per run) + run manifest
 
 Key rule: **the LLM never computes numbers.** Metrics are computed by deterministic Python and passed to the LLM, which only explains them. The output guardrail verifies that every number in the text matches a computed value.
 
-Full rationale: `docs/DECISIONS.md`. Metric formulas: `docs/METRICS.md`. Diagram source: `docs/architecture.mmd`.
+Full rationale: `docs/DECISIONS.md`. Metric formulas: `docs/METRICS.md`. Diagram source: `docs/architecture.svg` (export with `uv run python scripts/export_architecture.py`).
 
 ## 5. Tech stack
 
@@ -113,7 +113,7 @@ src/srag/
   ui/
     streamlit_app.py
 tests/                 Mirrors src/srag; uses small synthetic fixtures (no real data needed)
-docs/                  architecture.mmd/.pdf, DECISIONS.md, METRICS.md, sample report
+docs/                  architecture.svg/.pdf/.png, DECISIONS.md, METRICS.md, sample report
 data/raw, data/processed   Git-ignored
 reports/                   Git-ignored run outputs (report.html, report.pdf, audit.jsonl, manifest.json)
 ```

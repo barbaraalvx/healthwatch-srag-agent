@@ -173,3 +173,11 @@ Template:
   - The CLI messages are in English (developer tool); the UI is in pt-BR.
 - Alternatives: Business logic inside the UI (not testable, drifts from the CLI); the UI reading `report.html` (fragile); running the report on every Streamlit rerun (would spend money on each widget click).
 - Consequences: The UI keeps the last result in the session, so download buttons do not trigger a new run. The UI is tested with Streamlit's `AppTest` and the same fake model and searcher as the service.
+
+## D-019 - Architecture diagram: hand-drawn SVG as the source
+- Date: 2026-11-22
+- Status: Accepted
+- Context: The brief requires a PDF diagram with the orchestrator agent, the tools, the LLM interactions, the database and the news source. The first draft was a Mermaid file. Rendered with the default and with the ELK layout engines, the many cross links (tools to data, news, LLM, audit) produced a tall diagram with crossing lines that was hard to read.
+- Decision: The source is `docs/architecture.svg`, drawn by hand with fixed positions, in the same palette as the report. `scripts/export_architecture.py` turns it into `docs/architecture.pdf` (one page) and `docs/architecture.png` (embedded in the README, because GitHub does not show PDFs inline) using the Chromium that is already needed for the report. No network access is needed.
+- Alternatives: Mermaid (editable as text, but the layout could not be controlled); draw.io (needs a manual export and the file is harder to review in a diff); a diagram library in Python (one more dependency for one picture).
+- Consequences: Editing the diagram means editing SVG coordinates, which is less convenient than Mermaid text, but the result is predictable and reviewable. The diagram shows what was built (fallback, run limits, fixed tool scope, sanitized news block), so it must be updated when the graph changes.
