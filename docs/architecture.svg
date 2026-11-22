@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 990" width="1360" height="990">
+<defs>
+<marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M0,0 L10,5 L0,10 z" fill="#6B6359"/></marker>
+<marker id="head-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+<path d="M10,0 L0,5 L10,10 z" fill="#6B6359"/></marker>
+</defs>
+<rect width="1360" height="990" fill="#FFFFFF"/>
+<text x="40" y="46" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-weight="400" fill="#2F3E52" text-anchor="start"><tspan x="40" dy="0">healthwatch-srag-agent: conceptual architecture</tspan></text>
+<text x="40" y="70" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="40" dy="0">Generative AI agent that reports on SRAG in Brazil: Open DATASUS data, real-time news, an LLM that explains numbers computed by code.</tspan></text>
+<rect x="300" y="92" width="150" height="38" rx="19" fill="#FBF8F2" stroke="#2F3E52" stroke-width="1.4"/>
+<text x="375.0" y="115.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="375.0" dy="0">Health professional</tspan></text>
+<rect x="490" y="90" width="170" height="42" rx="8" fill="#FBF8F2" stroke="#2F3E52" stroke-width="1.4"/>
+<text x="575.0" y="107.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="575.0" dy="0">CLI / Streamlit</tspan></text>
+<text x="575.0" y="123.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="575.0" dy="0">generate_report(uf)</tspan></text>
+<rect x="700" y="84" width="150" height="54" rx="8" fill="#EFDDD8" stroke="#A04F46" stroke-width="1.4"/>
+<text x="775.0" y="107.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">Input guardrail</tspan></text>
+<text x="775.0" y="123.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">Brazil or one of 27 UFs</tspan></text>
+<path d="M450,111 H490" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M660,111 H700" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="40" y="150" width="250" height="300" rx="14" fill="#F5EFE6" stroke="#C9BFAE" stroke-width="1.4"/>
+<text x="54" y="172" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#2F3E52" text-anchor="start"><tspan x="54" dy="0">DATABASE</tspan></text>
+<path d="M60,187 A105.0,9 0 0 1 270,187 V231 A105.0,9 0 0 1 60,231 Z" fill="#E6D8C6" stroke="#6B6359" stroke-width="1.4"/>
+<path d="M60,187 A105.0,9 0 0 0 270,187" fill="none" stroke="#6B6359" stroke-width="1.2"/>
+<text x="165.0" y="212.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">DuckDB (in memory)</tspan></text>
+<text x="165.0" y="228.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">fixed queries, file access off</tspan></text>
+<path d="M60,277 A105.0,9 0 0 1 270,277 V311 A105.0,9 0 0 1 60,311 Z" fill="#E6D8C6" stroke="#6B6359" stroke-width="1.4"/>
+<path d="M60,277 A105.0,9 0 0 0 270,277" fill="none" stroke="#6B6359" stroke-width="1.2"/>
+<text x="165.0" y="297.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">Parquet</tspan></text>
+<text x="165.0" y="313.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">only the selected columns</tspan></text>
+<path d="M60,357 A105.0,9 0 0 1 270,357 V399 A105.0,9 0 0 1 60,399 Z" fill="#E6D8C6" stroke="#6B6359" stroke-width="1.4"/>
+<path d="M60,357 A105.0,9 0 0 0 270,357" fill="none" stroke="#6B6359" stroke-width="1.2"/>
+<text x="165.0" y="381.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">Open DATASUS SRAG</tspan></text>
+<text x="165.0" y="397.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">CSV files 2025 + 2026</tspan></text>
+<path d="M165,348 V320" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M165,268 V240" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="165" y="428" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="165" dy="0">prepare: keep selected columns, clean,</tspan></text>
+<text x="165" y="441" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="165" dy="0">drop identifiers. Only aggregates leave.</tspan></text>
+<rect x="330" y="150" width="230" height="230" rx="14" fill="#F5EFE6" stroke="#C9BFAE" stroke-width="1.4"/>
+<text x="344" y="172" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#2F3E52" text-anchor="start"><tspan x="344" dy="0">TOOLS (fixed, typed, read-only)</tspan></text>
+<rect x="350" y="186" width="190" height="44" rx="6" fill="#FBF8F2" stroke="#2F3E52" stroke-width="1.4"/>
+<text x="445.0" y="204.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="445.0" dy="0">get_metrics()</tspan></text>
+<text x="445.0" y="220.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="445.0" dy="0">4 metrics + vaccination</tspan></text>
+<rect x="350" y="244" width="190" height="54" rx="6" fill="#FBF8F2" stroke="#2F3E52" stroke-width="1.4"/>
+<text x="445.0" y="267.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="445.0" dy="0">get_case_series()</tspan></text>
+<text x="445.0" y="283.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="445.0" dy="0">builds the 2 charts (PNG)</tspan></text>
+<rect x="350" y="312" width="190" height="44" rx="6" fill="#FBF8F2" stroke="#2F3E52" stroke-width="1.4"/>
+<text x="445.0" y="330.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="445.0" dy="0">search_news(query)</tspan></text>
+<text x="445.0" y="346.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="445.0" dy="0">scope fixed by the run</tspan></text>
+<path d="M350,208 H270" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M350,271 L270,228" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="40" y="490" width="250" height="230" rx="14" fill="#F5EFE6" stroke="#C9BFAE" stroke-width="1.4"/>
+<text x="54" y="512" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#2F3E52" text-anchor="start"><tspan x="54" dy="0">NEWS SOURCE</tspan></text>
+<path d="M60,525 A105.0,9 0 0 1 270,525 V581 A105.0,9 0 0 1 60,581 Z" fill="#E6D8C6" stroke="#6B6359" stroke-width="1.4"/>
+<path d="M60,525 A105.0,9 0 0 0 270,525" fill="none" stroke="#6B6359" stroke-width="1.2"/>
+<text x="165.0" y="548.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">Tavily Search API</tspan></text>
+<text x="165.0" y="564.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">allowlisted domains,</tspan></text>
+<text x="165.0" y="580.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">recent period</tspan></text>
+<rect x="60" y="628" width="210" height="70" rx="8" fill="#EFDDD8" stroke="#A04F46" stroke-width="1.4"/>
+<text x="165.0" y="651.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">News sanitizer</tspan></text>
+<text x="165.0" y="667.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">allowlist, relevance,</tspan></text>
+<text x="165.0" y="683.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="165.0" dy="0">injection strip, truncation</tspan></text>
+<path d="M350,334 H312 V553 H270" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="307.8" y="429.5" width="36.4" height="17.6" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="326" y="440" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="326" dy="0">query</tspan></text>
+<path d="M165,590 V628" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M270,663 H370 V356" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="368.5" y="509.5" width="59.0" height="31.3" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="398" y="520" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="398" dy="0">sanitized</tspan><tspan x="398" dy="13.7">results</tspan></text>
+<rect x="640" y="150" width="270" height="600" rx="14" fill="#F5EFE6" stroke="#C9BFAE" stroke-width="1.4"/>
+<text x="654" y="172" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#2F3E52" text-anchor="start"><tspan x="654" dy="0"></tspan></text>
+<path d="M720,138 V185" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<text x="896" y="726" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#2F3E52" text-anchor="end"><tspan x="896" dy="0">ORCHESTRATOR AGENT (LangGraph)</tspan><tspan x="896" dy="12.8">run limits: iterations, cost, timeout</tspan></text>
+<rect x="660" y="185" width="230" height="90" rx="8" fill="#FBF8F2" stroke="#C9A45C" stroke-width="2.4"/>
+<text x="775.0" y="218.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">Orchestrator node</tspan></text>
+<text x="775.0" y="234.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">LLM with bound tools</tspan></text>
+<text x="775.0" y="250.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">sees counts, never news text</tspan></text>
+<rect x="660" y="335" width="230" height="60" rx="8" fill="#EFDDD8" stroke="#A04F46" stroke-width="1.4"/>
+<text x="775.0" y="361.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">Required-tools check</tspan></text>
+<text x="775.0" y="377.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">metrics and series retrieved</tspan></text>
+<rect x="660" y="445" width="230" height="100" rx="8" fill="#FBF8F2" stroke="#C9A45C" stroke-width="2.4"/>
+<text x="775.0" y="483.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">Writer node</tspan></text>
+<text x="775.0" y="499.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">LLM without tools</tspan></text>
+<text x="775.0" y="515.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">explains the computed numbers</tspan></text>
+<rect x="660" y="595" width="230" height="100" rx="8" fill="#EFDDD8" stroke="#A04F46" stroke-width="1.4"/>
+<text x="775.0" y="633.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">Output guardrail</tspan></text>
+<text x="775.0" y="649.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">numbers, cited URLs, sections,</tspan></text>
+<text x="775.0" y="665.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="775.0" dy="0">disclaimer, personal data</tspan></text>
+<path d="M775,275 V335" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M775,395 V445" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M730,545 V595" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M820,595 V545" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="828" y="564.5" width="98.7" height="31.3" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="832" y="575" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="832" dy="0">fail: retry once</tspan><tspan x="832" dy="13.7">with feedback</tspan></text>
+<path d="M660,230 H560" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)" marker-start="url(#head-start)"/>
+<rect x="577.6" y="211.5" width="64.7" height="17.6" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="610" y="222" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="610" dy="0">tool calls</tspan></text>
+<rect x="380" y="610" width="210" height="64" rx="8" fill="#FBF8F2" stroke="#2F3E52" stroke-width="1.4"/>
+<text x="485.0" y="638.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="485.0" dy="0">Template-only fallback</tspan></text>
+<text x="485.0" y="654.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="485.0" dy="0">no LLM text</tspan></text>
+<path d="M660,645 H590" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="606.8" y="621.5" width="36.4" height="31.3" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="625" y="632" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="625" dy="0">fails</tspan><tspan x="625" dy="13.7">twice</tspan></text>
+<path d="M660,495 H485 V610" fill="none" stroke="#6B6359" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#head)"/>
+<rect x="490" y="544.5" width="121.4" height="31.3" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="494" y="555" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="494" dy="0">limit or model error</tspan><tspan x="494" dy="13.7">at any step</tspan></text>
+<rect x="1060" y="170" width="220" height="390" rx="14" fill="#2F3E52"/>
+<text x="1170" y="330" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#FBF8F2" text-anchor="middle"><tspan x="1170" dy="0">LLM</tspan><tspan x="1170" dy="19.2">Claude Haiku 5.5</tspan><tspan x="1170" dy="19.2">Anthropic API</tspan></text>
+<text x="1170" y="400" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#A9B4C2" text-anchor="middle"><tspan x="1170" dy="0">tool calling (orchestrator)</tspan><tspan x="1170" dy="14.1">and writing (writer)</tspan><tspan x="1170" dy="14.1">effort low, no temperature</tspan></text>
+<path d="M890,230 H1060" fill="none" stroke="#6B6359" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#head)" marker-start="url(#head-start)"/>
+<rect x="931.3" y="207.5" width="87.4" height="17.6" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="975" y="218" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="975" dy="0">tool decisions</tspan></text>
+<path d="M890,495 H1060" fill="none" stroke="#6B6359" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#head)" marker-start="url(#head-start)"/>
+<rect x="914.3" y="441.5" width="121.4" height="45.0" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="975" y="452" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="975" dy="0">aggregated metrics +</tspan><tspan x="975" dy="13.7">sanitized news in an</tspan><tspan x="975" dy="13.7">untrusted block</tspan></text>
+<rect x="500" y="790" width="500" height="66" rx="8" fill="#FBF8F2" stroke="#2F3E52" stroke-width="1.4"/>
+<text x="750.0" y="819.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="750.0" dy="0">Report renderer</tspan></text>
+<text x="750.0" y="835.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="750.0" dy="0">Jinja2 HTML, PDF with Chromium; embeds the 2 charts and the sources</tspan></text>
+<path d="M700,695 V790" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M485,674 V765 H600 V790" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<path d="M750,856 V888" fill="none" stroke="#6B6359" stroke-width="1.6" marker-end="url(#head)"/>
+<rect x="500" y="888" width="500" height="62" rx="8" fill="#FBF8F2" stroke="#C9A45C" stroke-width="2.4"/>
+<text x="750.0" y="915.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="750.0" dy="0">report.html + report.pdf</tspan></text>
+<text x="750.0" y="931.4" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="750.0" dy="0">metrics, charts, analysis, sources, disclaimer, run manifest</tspan></text>
+<path d="M1060,609 A130.0,9 0 0 1 1320,609 V691 A130.0,9 0 0 1 1060,691 Z" fill="#E6D8C6" stroke="#6B6359" stroke-width="1.4"/>
+<path d="M1060,609 A130.0,9 0 0 0 1320,609" fill="none" stroke="#6B6359" stroke-width="1.2"/>
+<text x="1190.0" y="645.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#2F3E52" text-anchor="middle"><tspan x="1190.0" dy="0">Audit trail</tspan></text>
+<text x="1190.0" y="661.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="1190.0" dy="0">audit.jsonl + manifest.json</tspan></text>
+<text x="1190.0" y="677.9" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="400" fill="#2F3E52" text-anchor="middle"><tspan x="1190.0" dy="0">sanitized, one folder per run</tspan></text>
+<path d="M890,645 H1060" fill="none" stroke="#6B6359" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#head)"/>
+<rect x="908.6" y="595.5" width="132.7" height="45.0" fill="#FFFFFF" fill-opacity="0.9" rx="3"/>
+<text x="975" y="606" font-family="Segoe UI, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#6B6359" text-anchor="middle"><tspan x="975" dy="0">every node, tool call,</tspan><tspan x="975" dy="13.7">LLM call and guardrail</tspan><tspan x="975" dy="13.7">decision is logged</tspan></text>
+<path d="M1000,823 H1190 V700" fill="none" stroke="#6B6359" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#head)"/>
+<text x="40" y="770" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#2F3E52" text-anchor="start"><tspan x="40" dy="0">Legend</tspan></text>
+<rect x="40" y="785" width="22" height="14" rx="3" fill="#FBF8F2" stroke="#C9A45C" stroke-width="1.6"/>
+<text x="72" y="796.5" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="72" dy="0">Agent node (LLM)</tspan></text>
+<rect x="40" y="809" width="22" height="14" rx="3" fill="#EFDDD8" stroke="#A04F46" stroke-width="1.6"/>
+<text x="72" y="820.5" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="72" dy="0">Guardrail / validation</tspan></text>
+<rect x="40" y="833" width="22" height="14" rx="3" fill="#E6D8C6" stroke="#6B6359" stroke-width="1.6"/>
+<text x="72" y="844.5" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="72" dy="0">Data store or external service</tspan></text>
+<rect x="40" y="857" width="22" height="14" rx="3" fill="#2F3E52" stroke="#2F3E52" stroke-width="1.6"/>
+<text x="72" y="868.5" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="72" dy="0">Language model</tspan></text>
+<path d="M40,888 H62" stroke="#6B6359" stroke-width="1.6" stroke-dasharray="6 5"/>
+<text x="72" y="892.5" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#6B6359" text-anchor="start"><tspan x="72" dy="0">Logging or model call</tspan></text>
+</svg>
