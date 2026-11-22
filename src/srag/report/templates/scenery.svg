@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" role="presentation" focusable="false">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f2b3d"/>
+      <stop offset="0.55" stop-color="#3b4d63"/>
+      <stop offset="1" stop-color="#6d8294"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#c9a45c" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#c9a45c" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="seigaiha" width="80" height="40" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#a9b4c2" stroke-opacity="0.55" stroke-width="2">
+        <circle cx="40" cy="40" r="38"/><circle cx="40" cy="40" r="28"/><circle cx="40" cy="40" r="18"/><circle cx="40" cy="40" r="8"/>
+        <circle cx="0" cy="20" r="38"/><circle cx="0" cy="20" r="28"/><circle cx="0" cy="20" r="18"/><circle cx="0" cy="20" r="8"/>
+        <circle cx="80" cy="20" r="38"/><circle cx="80" cy="20" r="28"/><circle cx="80" cy="20" r="18"/><circle cx="80" cy="20" r="8"/>
+      </g>
+    </pattern>
+    <g id="blossom">
+      <g fill="#e8c9c4">
+        <circle cx="0" cy="-9" r="7"/><circle cx="8.5" cy="-3" r="7"/><circle cx="5" cy="8" r="7"/>
+        <circle cx="-5" cy="8" r="7"/><circle cx="-8.5" cy="-3" r="7"/>
+      </g>
+      <circle r="3" fill="#c9a39a"/>
+    </g>
+    <g id="carp">
+      <path d="M0 0 C 30 -26 80 -26 110 0 C 80 26 30 26 0 0 Z" fill="#c9a39a"/>
+      <path d="M110 0 L150 -22 C140 -8 140 8 150 22 Z" fill="#b5836f"/>
+      <path d="M34 -14 C 46 -4 46 4 34 14 M52 -17 C 64 -6 64 6 52 17 M70 -16 C 80 -6 80 6 70 16" fill="none" stroke="#fbf8f2" stroke-opacity="0.7" stroke-width="2"/>
+      <circle cx="16" cy="-4" r="3" fill="#2f3e52"/>
+    </g>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#sky)"/>
+
+  <circle cx="1500" cy="200" r="190" fill="url(#halo)"/>
+  <circle cx="1500" cy="200" r="86" fill="#c9a45c"/>
+
+  <g fill="#e6d8c6" fill-opacity="0.35">
+    <rect x="900" y="120" width="260" height="10" rx="5"/>
+    <rect x="960" y="148" width="180" height="10" rx="5"/>
+    <rect x="1380" y="300" width="220" height="10" rx="5"/>
+    <rect x="1440" y="328" width="150" height="10" rx="5"/>
+  </g>
+
+  <path d="M0 640 C 140 560 260 520 380 600 C 480 540 600 560 700 650 L 700 1000 L 0 1000 Z" fill="#2f4157"/>
+  <path d="M1000 700 C 1120 600 1260 580 1360 650 C 1460 590 1540 610 1600 660 L1600 1000 L1000 1000 Z" fill="#344a60"/>
+
+  <g fill="#1c2837" transform="translate(-110 0)">
+    <rect x="150" y="470" width="14" height="140"/>
+    <path d="M90 520 L224 520 L206 500 L108 500 Z"/>
+    <path d="M104 500 L210 500 L196 480 L118 480 Z"/>
+    <path d="M118 480 L196 480 L186 462 L128 462 Z"/>
+    <path d="M128 462 L186 462 L157 420 Z"/>
+    <path d="M60 575 L254 575 L236 555 L78 555 Z"/>
+  </g>
+
+  <g stroke="#4a3a33" stroke-linecap="round" fill="none">
+    <path d="M-20 90 C 120 120 200 60 330 110 C 420 145 470 120 560 70" stroke-width="12"/>
+    <path d="M200 88 C 230 150 300 190 330 250" stroke-width="7"/>
+    <path d="M400 128 C 440 170 520 190 560 250" stroke-width="6"/>
+    <path d="M1620 60 C 1500 100 1440 40 1330 90" stroke-width="10"/>
+    <path d="M1480 70 C 1470 130 1420 170 1380 230" stroke-width="6"/>
+  </g>
+  <g>
+    <use href="#blossom" x="60" y="108"/><use href="#blossom" x="150" y="112"/><use href="#blossom" x="250" y="96"/>
+    <use href="#blossom" x="330" y="112"/><use href="#blossom" x="430" y="140"/><use href="#blossom" x="520" y="104"/>
+    <use href="#blossom" x="560" y="72"/><use href="#blossom" x="228" y="150"/><use href="#blossom" x="300" y="190"/>
+    <use href="#blossom" x="330" y="250"/><use href="#blossom" x="500" y="190"/><use href="#blossom" x="560" y="248"/>
+    <use href="#blossom" x="1560" y="70"/><use href="#blossom" x="1490" y="86"/><use href="#blossom" x="1410" y="70"/>
+    <use href="#blossom" x="1335" y="92"/><use href="#blossom" x="1476" y="130"/><use href="#blossom" x="1420" y="172"/>
+    <use href="#blossom" x="1382" y="228"/>
+  </g>
+
+  <rect x="0" y="800" width="1600" height="200" fill="#2a4259"/>
+  <rect x="0" y="800" width="1600" height="200" fill="url(#seigaiha)"/>
+  <rect x="0" y="780" width="1600" height="40" fill="#a9b4c2" fill-opacity="0.18"/>
+
+  <use href="#carp" transform="translate(1180 720) rotate(-12)"/>
+  <use href="#carp" transform="translate(1330 790) rotate(8) scale(0.8)"/>
+  <use href="#carp" transform="translate(40 790) rotate(10) scale(0.7)"/>
+</svg>

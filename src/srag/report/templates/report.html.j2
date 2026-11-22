@@ -1,3 +1,22 @@
+{%- macro icon(name) -%}
+<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+{%- if name == "summary" %}<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7"/>
+{%- elif name == "metrics" %}<path d="M4 20V10M10 20V4M16 20v-7M2 20h20"/>
+{%- elif name == "charts" %}<path d="M3 17l6-6 4 4 8-9"/><path d="M15 6h6v6"/>
+{%- elif name == "analysis" %}<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>
+{%- elif name == "limits" %}<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>
+{%- elif name == "sources" %}<path d="M5 4h11v16H5z"/><path d="M16 8h3v12H8M8 8h5M8 12h5"/>
+{%- elif name == "trend" %}<path d="M3 17l6-6 4 4 8-9"/><path d="M15 6h6v6"/>
+{%- elif name == "pulse" %}<path d="M3 12h4l2-6 4 12 2-6h6"/>
+{%- elif name == "bed" %}<path d="M3 19V7M3 14h18v5M21 14v-3a3 3 0 0 0-3-3h-7v6"/>
+{%- elif name == "syringe" %}<path d="M18 3l3 3M16 5l3 3M14 7l3 3-8 8H6v-3z"/><path d="M6 18l-3 3"/>
+{%- elif name == "download" %}<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>
+{%- elif name == "audit" %}<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>
+{%- elif name == "manifest" %}<path d="M7 3h8l4 4v14H7z"/><path d="M10 12h6M10 16h6"/>
+{%- elif name == "calendar" %}<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>
+{%- elif name == "moon" %}<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>
+{%- endif %}</svg>
+{%- endmacro -%}
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -6,147 +25,339 @@
 <title>Relatório SRAG - {{ report.scope }}</title>
 <style>
   :root {
-    --text: #0b0b0b;
-    --text-secondary: #52514e;
-    --muted: #898781;
-    --surface: #ffffff;
-    --card: #f6f5f1;
-    --line: #e1e0d9;
-    --accent: #2a78d6;
-    --warning-bg: #fff4d6;
-    --warning-text: #7a5600;
+    --cream: #f5efe6;
+    --card: #fbf8f2;
+    --navy: #2f3e52;
+    --gold: #c9a45c;
+    --sand: #e6d8c6;
+    --blue-grey: #a9b4c2;
+    --rose: #c9a39a;
+    --muted: #7a7268;
+    --line: #e6d8c6;
+    --good: #6b8f71;
+    --bad: #b5655c;
+    --rose-soft: #efddd8;
+    --font-title: "Playfair Display", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --font-body: Inter, Lato, "Segoe UI", "DejaVu Sans", Arial, sans-serif;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
-    margin: 0 auto;
-    max-width: 880px;
-    padding: 24px 16px 40px;
-    background: var(--surface);
-    color: var(--text);
-    font-family: "Segoe UI", "DejaVu Sans", Arial, sans-serif;
+    margin: 0;
+    background: #2a3a4e;
+    color: var(--navy);
+    font-family: var(--font-body);
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 1.6;
   }
-  header { border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px; }
-  h1 { margin: 0 0 4px; font-size: 24px; }
-  h2 { margin: 28px 0 10px; font-size: 17px; }
-  .meta { color: var(--text-secondary); font-size: 13px; }
-  .notice, .badge {
-    background: var(--warning-bg);
-    color: var(--warning-text);
-    border-radius: 6px;
+  .scenery { position: fixed; inset: 0; z-index: -1; }
+  .scenery svg { width: 100%; height: 100%; display: block; }
+
+  .frame {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    max-width: 1180px;
+    margin: 32px auto;
+    background: var(--cream);
+    border-radius: 20px;
+    box-shadow: 0 18px 50px rgba(20, 28, 40, 0.45);
+    overflow: hidden;
   }
-  .notice { padding: 10px 12px; margin-bottom: 16px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+
+  /* --- Sidebar --- */
+  .sidebar {
+    padding: 28px 16px;
+    background: var(--card);
+    border-right: 1px solid var(--line);
+  }
+  .sidebar nav { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 4px; }
+  .sidebar a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+  }
+  .sidebar a.active { background: var(--gold); color: var(--navy); font-weight: 600; }
+  .icon { width: 18px; height: 18px; flex: none; }
+
+  /* --- Main panel --- */
+  main { padding: 32px 36px 28px; min-width: 0; }
+  header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .brand { display: flex; gap: 14px; align-items: center; }
+  .logo {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--navy); color: var(--gold);
+    display: grid; place-items: center;
+  }
+  .logo .icon { width: 24px; height: 24px; }
+  h1 { margin: 0; font-family: var(--font-title); font-size: 30px; font-weight: 600; line-height: 1.15; }
+  .tagline {
+    margin: 4px 0 0; color: var(--muted);
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .period {
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--blue-grey); border-radius: 10px;
+    padding: 8px 14px; font-size: 13px; background: var(--card);
+  }
+  .period small { display: block; color: var(--muted); font-size: 10.5px; line-height: 1.2; }
+
+  h2 { margin: 0 0 12px; font-family: var(--font-title); font-size: 21px; font-weight: 600; }
+  section { margin-bottom: 30px; scroll-margin-top: 20px; }
   .card {
     background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 12px 14px;
-    break-inside: avoid;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(47, 62, 82, 0.08);
   }
-  .card h3 { margin: 0; font-size: 13px; color: var(--text-secondary); font-weight: 600; }
-  .value { font-size: 30px; font-weight: 700; margin: 2px 0; }
-  .card p { margin: 2px 0; font-size: 12px; color: var(--text-secondary); }
-  .badge { display: inline-block; padding: 1px 8px; font-size: 11px; font-weight: 600; }
-  .note { color: var(--muted); }
-  figure { margin: 0 0 14px; break-inside: avoid; }
-  figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
-  .text a { color: var(--accent); }
-  ul { padding-left: 20px; }
+  .notice {
+    background: var(--rose-soft); color: #7a4a42;
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 22px;
+  }
+  .text p { margin: 0 0 10px; }
+  .text p:last-child { margin-bottom: 0; }
+  .text a, .sources a { color: var(--navy); text-decoration-color: var(--gold); text-underline-offset: 3px; }
+
+  /* --- KPIs --- */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .kpi { display: flex; flex-direction: column; gap: 2px; break-inside: avoid; }
+  .kpi .icon { width: 22px; height: 22px; color: var(--gold); margin-bottom: 6px; }
+  .kpi .label { color: var(--muted); font-size: 12px; }
+  .kpi .value { font-size: 34px; font-weight: 700; line-height: 1.1; }
+  .kpi .detail { color: var(--muted); font-size: 11.5px; margin: 2px 0 0; }
+  .trend { margin: 2px 0 0; font-size: 12px; font-weight: 600; }
+  .trend span { font-weight: 400; color: var(--muted); }
+  .trend-down { color: var(--good); }
+  .trend-up { color: var(--bad); }
+  .kpi.inverted { background: var(--navy); color: var(--cream); }
+  .kpi.inverted .label, .kpi.inverted .detail { color: var(--blue-grey); }
+  .kpi.inverted .icon { color: var(--gold); }
+  .secondary { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(169, 180, 194, 0.4); }
+  .secondary .value { font-size: 20px; }
+  .tag {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; background: var(--sand); color: var(--navy);
+  }
+  .tag.warn { background: var(--rose-soft); color: #7a4a42; }
+
+  /* --- Charts --- */
+  figure { margin: 0 0 14px; }
+  figure img { display: block; width: 100%; height: auto; border-radius: 14px; }
+
+  /* --- Table --- */
+  .table-card { padding: 8px 22px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; }
+  th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); }
+  tr:last-child td { border-bottom: 0; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 10px; background: var(--navy); }
+  .dot-2 { background: var(--gold); } .dot-3 { background: var(--sand); }
+  .dot-4 { background: var(--blue-grey); } .dot-5 { background: var(--rose); }
+
+  /* --- Notes, sources, extras --- */
+  ul { margin: 0; padding-left: 20px; }
   li { margin-bottom: 6px; }
-  footer {
-    margin-top: 32px;
-    padding-top: 12px;
-    border-top: 1px solid var(--line);
-    color: var(--text-secondary);
-    font-size: 12px;
+  .actions-card { margin-bottom: 30px; }
+  .actions { list-style: none; padding: 0; margin: 0; }
+  .actions li { margin: 0; border-bottom: 1px solid var(--line); }
+  .actions li:last-child { border-bottom: 0; }
+  .actions a {
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    color: var(--navy); text-decoration: none;
   }
+  .actions a::after { content: "\203A"; margin-left: auto; color: var(--muted); font-size: 18px; }
+  .actions .icon { color: var(--gold); }
+
+  footer { border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: 12px; }
   footer p { margin: 4px 0; }
+
+  @media (max-width: 860px) {
+    .frame { grid-template-columns: 1fr; margin: 0; border-radius: 0; }
+    .sidebar { display: none; }
+    main { padding: 24px 16px; }
+  }
   @media print {
-    body { padding: 0; max-width: none; font-size: 12px; }
+    body { background: #fff; font-size: 12px; }
+    .scenery, .sidebar, .actions-card { display: none; }
+    .frame { display: block; margin: 0; max-width: none; box-shadow: none; border-radius: 0; background: var(--cream); }
+    main { padding: 0; }
+    .kpis { grid-template-columns: repeat(2, 1fr); }
     h2 { break-after: avoid; }
+    .card, figure, tr { break-inside: avoid; }
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>Relatório de SRAG: {{ report.scope }}</h1>
-  <div class="meta">
-    Dados até {{ report.reference_date }} (último caso com início de sintomas)
-    &middot; Gerado em {{ report.generated_at }}
-  </div>
-</header>
+<div class="scenery" aria-hidden="true">{% include "scenery.svg" %}</div>
 
-{% if report.notice %}
-<div class="notice" role="note">{{ report.notice }}</div>
-{% endif %}
+<div class="frame">
+  <aside class="sidebar">
+    <nav aria-label="Seções do relatório">
+      <a href="#resumo" class="active">{{ icon("summary") }}Resumo</a>
+      <a href="#metricas">{{ icon("metrics") }}Métricas</a>
+      <a href="#graficos">{{ icon("charts") }}Gráficos</a>
+      <a href="#analise">{{ icon("analysis") }}Análise</a>
+      <a href="#limitacoes">{{ icon("limits") }}Limitações</a>
+      <a href="#fontes">{{ icon("sources") }}Fontes</a>
+    </nav>
+  </aside>
 
-<section>
-  <h2>Resumo executivo</h2>
-  <div class="text">{{ report.summary_html }}</div>
-</section>
+  <main>
+    <header>
+      <div class="brand">
+        <div class="logo">{{ icon("moon") }}</div>
+        <div>
+          <h1>Relatório de SRAG: {{ report.scope }}</h1>
+          <p class="tagline">Open DATASUS &bull; Notícias recentes &bull; Dados até {{ report.reference_date }}</p>
+        </div>
+      </div>
+      <div class="period">
+        {{ icon("calendar") }}
+        <div><small>Janela de análise</small>{{ report.window }}</div>
+      </div>
+    </header>
 
-<section>
-  <h2>Métricas</h2>
-  <div class="cards">
-    {% for card in report.cards %}
-    <div class="card">
-      <h3>{{ card.title }}</h3>
-      <div class="value">{{ card.value }}</div>
-      <p>{{ card.basis }}</p>
-      <p>Janela: {{ card.window }}</p>
-      {% if card.completeness %}<p>Completude: {{ card.completeness }}</p>{% endif %}
-      {% if card.unstable %}<p><span class="badge">Amostra pequena: resultado instável</span></p>{% endif %}
-      {% if card.note %}<p class="note">{{ card.note }}</p>{% endif %}
+    {% if report.notice %}
+    <div class="notice" role="note">{{ report.notice }}</div>
+    {% endif %}
+
+    <section id="resumo">
+      <h2>Resumo executivo</h2>
+      <div class="card text">{{ report.summary_html }}</div>
+    </section>
+
+    <section id="metricas">
+      <h2>Métricas</h2>
+      <div class="kpis">
+        {% for card in report.cards|selectattr("primary") %}
+        <div class="card kpi{% if loop.last %} inverted{% endif %}">
+          {{ icon(card.icon) }}
+          <span class="label">{{ card.title }}</span>
+          <span class="value">{{ card.value }}</span>
+          {% if card.trend %}
+          <p class="trend trend-{{ card.trend }}">{{ "&#9660;"|safe if card.trend == "down" else "&#9650;"|safe }} <span>vs. janela anterior</span></p>
+          {% endif %}
+          <p class="detail">{{ card.basis }}</p>
+          {% if card.completeness %}<p class="detail">Completude: {{ card.completeness }}</p>{% endif %}
+          {% if card.unstable %}<p><span class="tag warn">Amostra pequena: resultado instável</span></p>{% endif %}
+          {% if loop.last %}
+          {% for other in report.cards|rejectattr("primary") %}
+          <div class="secondary">
+            <span class="label">{{ other.title }}</span>
+            <span class="value">{{ other.value }}</span>
+            <p class="detail">{{ other.basis }}</p>
+            {% if other.unstable %}<p><span class="tag warn">Amostra pequena: resultado instável</span></p>{% endif %}
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section id="graficos">
+      <h2>Gráficos</h2>
+      <figure><img src="{{ report.daily_chart_uri }}" alt="Casos por dia nos últimos 30 dias"></figure>
+      <figure><img src="{{ report.monthly_chart_uri }}" alt="Casos por mês nos últimos 12 meses"></figure>
+    </section>
+
+    <section id="detalhes">
+      <h2>Detalhamento das métricas</h2>
+      <div class="card table-card">
+        <table>
+          <thead>
+            <tr><th>Indicador</th><th>Janela</th><th>Base de cálculo</th><th>Completude</th><th>Situação</th></tr>
+          </thead>
+          <tbody>
+            {% for card in report.cards %}
+            <tr>
+              <td><span class="dot dot-{{ loop.index }}"></span>{{ card.title }}</td>
+              <td>{{ card.window }}</td>
+              <td>{{ card.basis }}</td>
+              <td>{{ card.completeness or "n/d" }}</td>
+              <td>{% if card.unstable %}<span class="tag warn">Amostra pequena</span>{% else %}<span class="tag">Estável</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="analise">
+      <h2>Análise do cenário</h2>
+      <div class="card text">{{ report.analysis_html }}</div>
+    </section>
+
+    <section id="limitacoes">
+      <h2>Limitações e notas metodológicas</h2>
+      <div class="card">
+        <ul>
+          {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+      </div>
+    </section>
+
+    <section id="fontes">
+      <h2>Fontes</h2>
+      <div class="card sources">
+        {% if report.sources %}
+        <ul>
+          {% for source in report.sources %}
+          <li><a href="{{ source.url }}">{{ source.title }}</a> ({{ source.source }}, {{ source.published }})</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>Nenhuma notícia confiável foi encontrada para esta execução.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <div class="card actions-card">
+      <ul class="actions">
+        <li><a href="report.pdf">{{ icon("download") }}Baixar o relatório em PDF</a></li>
+        <li><a href="audit.jsonl">{{ icon("audit") }}Ver a trilha de auditoria</a></li>
+        <li><a href="manifest.json">{{ icon("manifest") }}Ver o manifesto da execução</a></li>
+      </ul>
     </div>
-    {% endfor %}
-  </div>
-</section>
 
-<section>
-  <h2>Gráficos</h2>
-  <figure><img src="{{ report.daily_chart_uri }}" alt="Casos por dia nos últimos 30 dias"></figure>
-  <figure><img src="{{ report.monthly_chart_uri }}" alt="Casos por mês nos últimos 12 meses"></figure>
-</section>
+    <footer>
+      <p>{{ report.disclaimer }}</p>
+      <p>
+        Execução {{ report.run.run_id }} &middot; gerado em {{ report.generated_at }}
+        &middot; dados até {{ report.reference_date }}
+      </p>
+      <p>
+        Modelo: {{ report.run.model }} (esforço: {{ report.run.effort }})
+        &middot; Prompts:
+        {% for name, version in report.run.prompt_versions.items() %}{{ name }} {{ version }}{% if not loop.last %}, {% endif %}{% endfor %}
+        &middot; Situação: {{ report.status }}
+      </p>
+    </footer>
+  </main>
+</div>
 
-<section>
-  <h2>Análise do cenário</h2>
-  <div class="text">{{ report.analysis_html }}</div>
-</section>
-
-<section>
-  <h2>Limitações e notas metodológicas</h2>
-  <ul>
-    {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
-  </ul>
-</section>
-
-<section>
-  <h2>Fontes</h2>
-  {% if report.sources %}
-  <ul>
-    {% for source in report.sources %}
-    <li><a href="{{ source.url }}">{{ source.title }}</a> ({{ source.source }}, {{ source.published }})</li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>Nenhuma notícia confiável foi encontrada para esta execução.</p>
-  {% endif %}
-</section>
-
-<footer>
-  <p>{{ report.disclaimer }}</p>
-  <p>
-    Execução {{ report.run.run_id }} &middot; gerado em {{ report.generated_at }}
-    &middot; dados até {{ report.reference_date }}
-  </p>
-  <p>
-    Modelo: {{ report.run.model }} (esforço: {{ report.run.effort }})
-    &middot; Prompts:
-    {% for name, version in report.run.prompt_versions.items() %}{{ name }} {{ version }}{% if not loop.last %}, {% endif %}{% endfor %}
-    &middot; Situação: {{ report.status }}
-  </p>
-</footer>
+<script>
+  (function () {
+    var links = document.querySelectorAll(".sidebar a");
+    var sections = Array.prototype.map.call(links, function (link) {
+      return document.querySelector(link.getAttribute("href"));
+    });
+    if (!("IntersectionObserver" in window)) { return; }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) { return; }
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + entry.target.id);
+        });
+      });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    sections.forEach(function (section) { if (section) { observer.observe(section); } });
+  })();
+</script>
 </body>
 </html>

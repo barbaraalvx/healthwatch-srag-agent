@@ -140,3 +140,39 @@ def test_news_titles_are_escaped(make_result):
 
     assert "<img src=x" not in html
     assert "01/11/2026" in html
+
+
+def test_four_primary_cards_and_the_secondary_flu_metric(make_result):
+    context = build_report_context(make_result(), RUN)
+
+    assert [card.primary for card in context.cards] == [True, True, True, True, False]
+    assert context.cards[-1].title == "Vacinados contra gripe (proxy)"
+
+
+def test_case_growth_card_shows_the_direction_of_the_change(make_result):
+    context = build_report_context(make_result(), RUN)
+
+    assert context.cards[0].trend == "down"
+    assert all(card.trend is None for card in context.cards[1:])
+    assert "trend-down" in render(make_result())
+
+
+def test_header_shows_the_analysis_window(make_result):
+    html = render(make_result())
+
+    assert "10/10/2026 a 08/11/2026" in html
+    assert "Janela de análise" in html
+
+
+def test_metrics_table_has_a_row_for_every_metric(make_result):
+    html = render(make_result())
+
+    assert html.count('<span class="dot dot-') == 5
+    assert "Estável" in html
+
+
+def test_quick_links_point_to_the_files_of_the_run(make_result):
+    html = render(make_result())
+
+    for target in ("report.pdf", "audit.jsonl", "manifest.json"):
+        assert f'href="{target}"' in html

@@ -2,7 +2,7 @@
 
 import base64
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 from markupsafe import Markup
@@ -31,6 +31,19 @@ AI_TEXT_UNAVAILABLE = (
     "As métricas e os gráficos abaixo foram calculados diretamente dos dados."
 )
 
+TREND_UP = "up"
+TREND_DOWN = "down"
+PRIMARY_METRICS = frozenset(
+    {CASE_GROWTH_RATE, MORTALITY_RATE, ICU_ADMISSION_RATE, COVID_VACCINATION_RATE}
+)
+METRIC_ICONS: dict[str, str] = {
+    CASE_GROWTH_RATE: "trend",
+    MORTALITY_RATE: "pulse",
+    ICU_ADMISSION_RATE: "bed",
+    COVID_VACCINATION_RATE: "syringe",
+    FLU_VACCINATION_RATE: "syringe",
+}
+
 METRIC_TITLES: dict[str, str] = {
     CASE_GROWTH_RATE: "Variação de casos",
     MORTALITY_RATE: "Mortalidade",
@@ -49,6 +62,9 @@ class MetricCard:
     completeness: str | None
     unstable: bool
     note: str | None
+    icon: str
+    primary: bool
+    trend: str | None
 
 
 @dataclass(frozen=True)
@@ -74,6 +90,7 @@ class RunDetails:
 class ReportContext:
     scope: str
     reference_date: str
+    window: str
     generated_at: str
     notice: str | None
     summary_html: Markup
@@ -95,6 +112,9 @@ def build_report_context(result: AgentResult, run: RunDetails) -> ReportContext:
     return ReportContext(
         scope=scope_name(result.snapshot.uf),
         reference_date=format_date(result.snapshot.reference_date),
+        window=_format_window(
+            result.snapshot.current_window.start, result.snapshot.current_window.end
+        ),
         generated_at=run.generated_at.strftime(GENERATED_AT_FORMAT),
         notice=None if result.status == STATUS_COMPLETED else AI_TEXT_UNAVAILABLE,
         summary_html=markdown_to_html(summary),
@@ -116,11 +136,24 @@ def _metric_card(metric: MetricResult) -> MetricCard:
         title=METRIC_TITLES[metric.name],
         value=NOT_AVAILABLE if metric.value is None else format_percent(metric.value),
         basis=_growth_basis(metric) if is_growth else _rate_basis(metric),
-        window=f"{format_date(metric.window_start)} a {format_date(metric.window_end)}",
+        window=_format_window(metric.window_start, metric.window_end),
         completeness=None if is_growth else format_percent(metric.completeness * 100),
         unstable=metric.unstable,
         note=metric.note,
+        icon=METRIC_ICONS[metric.name],
+        primary=metric.name in PRIMARY_METRICS,
+        trend=_trend(metric) if is_growth else None,
     )
+
+
+def _format_window(start: date, end: date) -> str:
+    return f"{format_date(start)} a {format_date(end)}"
+
+
+def _trend(metric: MetricResult) -> str | None:
+    if metric.value is None or round(metric.value, 1) == 0:
+        return None
+    return TREND_UP if metric.value > 0 else TREND_DOWN
 
 
 def _growth_basis(metric: MetricResult) -> str:
