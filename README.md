@@ -33,9 +33,9 @@ Given a scope (all of Brazil or one state), the agent:
 
 ## Architecture
 
-<!-- TODO (Phase 10): embed a PNG export of the diagram here (GitHub does not render PDFs inline) -->
+![Conceptual architecture of healthwatch-srag-agent](docs/architecture.png)
 
-- Conceptual diagram: [`docs/architecture.pdf`](docs/architecture.pdf) (source: [`docs/architecture.mmd`](docs/architecture.mmd))
+- Conceptual diagram: [`docs/architecture.pdf`](docs/architecture.pdf) (source: [`docs/architecture.svg`](docs/architecture.svg))
 - <!-- TODO (Phase 11): short description of each component and the graph flow -->
 
 ## Metrics
