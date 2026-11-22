@@ -93,6 +93,8 @@ class ReportContext:
     window: str
     generated_at: str
     notice: str | None
+    summary_markdown: str
+    analysis_markdown: str
     summary_html: Markup
     analysis_html: Markup
     cards: tuple[MetricCard, ...]
@@ -117,6 +119,8 @@ def build_report_context(result: AgentResult, run: RunDetails) -> ReportContext:
         ),
         generated_at=run.generated_at.strftime(GENERATED_AT_FORMAT),
         notice=None if result.status == STATUS_COMPLETED else AI_TEXT_UNAVAILABLE,
+        summary_markdown=summary,
+        analysis_markdown=analysis,
         summary_html=markdown_to_html(summary),
         analysis_html=markdown_to_html(analysis),
         cards=tuple(_metric_card(metric) for metric in result.snapshot.metrics),
