@@ -638,6 +638,7 @@ name = "healthwatch-srag-agent"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "anthropic" },
     { name = "duckdb" },
     { name = "jinja2" },
     { name = "langchain-anthropic" },
@@ -664,6 +665,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "anthropic", specifier = ">=2.12.0" },
     { name = "duckdb", specifier = ">=2.0.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "langchain-anthropic", specifier = ">=1.7.12" },
