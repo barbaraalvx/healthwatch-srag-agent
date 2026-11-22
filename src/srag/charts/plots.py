@@ -14,16 +14,17 @@ from matplotlib.ticker import FuncFormatter
 from srag.charts.series import CaseSeries, SeriesPoint
 from srag.config import DAILY_CHART_DAYS, MONTHLY_CHART_MONTHS
 
-COLOR_COMPLETE = "#2a78d6"
-COLOR_INCOMPLETE = "#86b6ef"
-COLOR_SURFACE = "#fcfcfb"
-COLOR_TEXT_PRIMARY = "#0b0b0b"
-COLOR_TEXT_SECONDARY = "#52514e"
-COLOR_TEXT_MUTED = "#898781"
-COLOR_GRID = "#e1e0d9"
-COLOR_BASELINE = "#c3c2b7"
+COLOR_COMPLETE = "#2f3e52"
+COLOR_INCOMPLETE = "#c9a45c"
+COLOR_SURFACE = "#fbf8f2"
+COLOR_TEXT_PRIMARY = "#2f3e52"
+COLOR_TEXT_SECONDARY = "#7a7268"
+COLOR_TEXT_MUTED = "#7a7268"
+COLOR_GRID = "#e6d8c6"
+COLOR_BASELINE = "#c9bfae"
 
 FONT_FAMILY = ["Segoe UI", "DejaVu Sans"]
+TITLE_FONT_FAMILY = ["Georgia", "DejaVu Serif"]
 FIGURE_SIZE = (8.0, 3.8)
 DPI = 150
 BAR_WIDTH = 0.72
@@ -121,7 +122,7 @@ def _style_axes(axes: Axes) -> None:
 
 def _add_header(figure: Figure, series: CaseSeries, spec: ChartSpec) -> None:
     subtitle = f"{scope_label(series.uf)} · data de referência: {series.reference_date:%d/%m/%Y}"
-    figure.text(0.02, 0.93, spec.title, fontsize=12, fontweight="semibold", va="top",
+    figure.text(0.02, 0.93, spec.title, fontsize=13, va="top", family=TITLE_FONT_FAMILY,
                 color=COLOR_TEXT_PRIMARY)  # fmt: skip
     figure.text(0.02, 0.86, subtitle, fontsize=9, va="top", color=COLOR_TEXT_SECONDARY)
     if any(point.incomplete for point in series.points):
