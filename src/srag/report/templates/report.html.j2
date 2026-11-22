@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório SRAG - {{ report.scope }}</title>
+<style>
+  :root {
+    --text: #0b0b0b;
+    --text-secondary: #52514e;
+    --muted: #898781;
+    --surface: #ffffff;
+    --card: #f6f5f1;
+    --line: #e1e0d9;
+    --accent: #2a78d6;
+    --warning-bg: #fff4d6;
+    --warning-text: #7a5600;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto;
+    max-width: 880px;
+    padding: 24px 16px 40px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: "Segoe UI", "DejaVu Sans", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  header { border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin-bottom: 20px; }
+  h1 { margin: 0 0 4px; font-size: 24px; }
+  h2 { margin: 28px 0 10px; font-size: 17px; }
+  .meta { color: var(--text-secondary); font-size: 13px; }
+  .notice, .badge {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border-radius: 6px;
+  }
+  .notice { padding: 10px 12px; margin-bottom: 16px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    break-inside: avoid;
+  }
+  .card h3 { margin: 0; font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+  .value { font-size: 30px; font-weight: 700; margin: 2px 0; }
+  .card p { margin: 2px 0; font-size: 12px; color: var(--text-secondary); }
+  .badge { display: inline-block; padding: 1px 8px; font-size: 11px; font-weight: 600; }
+  .note { color: var(--muted); }
+  figure { margin: 0 0 14px; break-inside: avoid; }
+  figure img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
+  .text a { color: var(--accent); }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  footer {
+    margin-top: 32px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+  footer p { margin: 4px 0; }
+  @media print {
+    body { padding: 0; max-width: none; font-size: 12px; }
+    h2 { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Relatório de SRAG: {{ report.scope }}</h1>
+  <div class="meta">
+    Dados até {{ report.reference_date }} (último caso com início de sintomas)
+    &middot; Gerado em {{ report.generated_at }}
+  </div>
+</header>
+
+{% if report.notice %}
+<div class="notice" role="note">{{ report.notice }}</div>
+{% endif %}
+
+<section>
+  <h2>Resumo executivo</h2>
+  <div class="text">{{ report.summary_html }}</div>
+</section>
+
+<section>
+  <h2>Métricas</h2>
+  <div class="cards">
+    {% for card in report.cards %}
+    <div class="card">
+      <h3>{{ card.title }}</h3>
+      <div class="value">{{ card.value }}</div>
+      <p>{{ card.basis }}</p>
+      <p>Janela: {{ card.window }}</p>
+      {% if card.completeness %}<p>Completude: {{ card.completeness }}</p>{% endif %}
+      {% if card.unstable %}<p><span class="badge">Amostra pequena: resultado instável</span></p>{% endif %}
+      {% if card.note %}<p class="note">{{ card.note }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2>Gráficos</h2>
+  <figure><img src="{{ report.daily_chart_uri }}" alt="Casos por dia nos últimos 30 dias"></figure>
+  <figure><img src="{{ report.monthly_chart_uri }}" alt="Casos por mês nos últimos 12 meses"></figure>
+</section>
+
+<section>
+  <h2>Análise do cenário</h2>
+  <div class="text">{{ report.analysis_html }}</div>
+</section>
+
+<section>
+  <h2>Limitações e notas metodológicas</h2>
+  <ul>
+    {% for item in report.limitations %}<li>{{ item }}</li>{% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2>Fontes</h2>
+  {% if report.sources %}
+  <ul>
+    {% for source in report.sources %}
+    <li><a href="{{ source.url }}">{{ source.title }}</a> ({{ source.source }}, {{ source.published }})</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>Nenhuma notícia confiável foi encontrada para esta execução.</p>
+  {% endif %}
+</section>
+
+<footer>
+  <p>{{ report.disclaimer }}</p>
+  <p>
+    Execução {{ report.run.run_id }} &middot; gerado em {{ report.generated_at }}
+    &middot; dados até {{ report.reference_date }}
+  </p>
+  <p>
+    Modelo: {{ report.run.model }} (esforço: {{ report.run.effort }})
+    &middot; Prompts:
+    {% for name, version in report.run.prompt_versions.items() %}{{ name }} {{ version }}{% if not loop.last %}, {% endif %}{% endfor %}
+    &middot; Situação: {{ report.status }}
+  </p>
+</footer>
+</body>
+</html>
