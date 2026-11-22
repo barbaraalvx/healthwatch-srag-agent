@@ -161,3 +161,15 @@ Template:
 - Consequences: Chromium (about 120 MB) must be installed once with `uv run playwright install chromium`; CI installs it too. The report page is the only place with the full text, so the Streamlit UI (Phase 9) will reuse the same `ReportResult`.
 - Design (2026-11-22): the page is a cream "paper" panel floating over an inline SVG woodblock-style scene (moon, cherry branches, pagoda, waves, carp); the scene is hidden when printing. Palette of muted earth tones (navy `#2F3E52`, gold `#C9A45C`, sand, blue-grey, rose), serif titles and sans-serif body. The dashboard layout of the brief was adapted to a report: sidebar = section index, period box = analysis window, four KPI cards (the last one inverted, with the secondary flu proxy inside it), the two charts, a metrics table with stable/small-sample tags, and quick links to the PDF, the audit trail and the manifest. The charts use the same palette. Fonts are system stacks (no network), so the page works offline.
 
+## D-018 - Interfaces: CLI and Streamlit as thin layers over one service function
+- Date: 2026-11-22
+- Status: Accepted
+- Context: Phase 9 adds a command line and a web UI. Both must behave the same and neither may hold business logic.
+- Decision:
+  - Both call only `service.generate_report(uf)`. The result (`ReportResult`) carries the file paths, the chart files and the `ReportContext` (formatted metrics, text, sources), so the UI never parses the HTML.
+  - CLI (`python -m srag --uf SP --no-pdf --output-dir DIR`): expected problems (invalid UF, data not prepared, no cases, news search error) print one `error:` line with exit code 2 (invalid request) or 1, never a stack trace. Any other failure prints one line with the exception type only (the details stay in the audit log or at `LOG_LEVEL=DEBUG`), so internal messages do not leak.
+  - A missing `data/processed/srag.parquet` is detected before the run folder is created (`DataNotPreparedError`, with the command to fix it).
+  - Streamlit: scope selector (Brazil and 27 UFs), a button that runs the report only on click (the model and news are paid calls), metrics with `st.metric`, charts, text, sources, HTML and PDF downloads, and an expander "Auditoria desta execucao" with the `audit.jsonl` events as a table plus the manifest totals. The text is shown with `st.markdown` (no unsafe HTML). The server listens on `localhost` only (`.streamlit/config.toml`), so the PoC is not exposed to the network by default.
+  - The CLI messages are in English (developer tool); the UI is in pt-BR.
+- Alternatives: Business logic inside the UI (not testable, drifts from the CLI); the UI reading `report.html` (fragile); running the report on every Streamlit rerun (would spend money on each widget click).
+- Consequences: The UI keeps the last result in the session, so download buttons do not trigger a new run. The UI is tested with Streamlit's `AppTest` and the same fake model and searcher as the service.
