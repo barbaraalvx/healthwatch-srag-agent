@@ -1,10 +1,8 @@
 # Plano de implementação: healthwatch-srag-agent
 
-Este é o roteiro completo, desde a instalação dos programas até a entrega. Siga as fases na ordem e só passe para a próxima quando todos os itens de "Pronto quando" estiverem marcados.
+Este documento registra o roteiro de implementação do projeto, dividido em fases. Ele foi elaborado a partir das orientações da autora, com uma análise de viabilidade feita com o Claude (Anthropic) e revisada pela autora. Cada fase tem uma branch própria e é integrada por pull request.
 
 **Escolhas já feitas:** Windows, Claude Haiku (pago), CLI + Streamlit, uv. Os motivos de cada decisão estão em `docs/DECISIONS.md`.
-
-**Como usar com o Claude Code:** o `CLAUDE.md` na raiz é lido automaticamente. Peça uma fase por vez, por exemplo: *"Implemente a Fase 3 do docs/PLANO_DE_IMPLEMENTACAO.md"*. Revise e rode os testes antes de seguir.
 
 ---
 
@@ -27,73 +25,9 @@ Este é o roteiro completo, desde a instalação dos programas até a entrega. S
 
 ---
 
-## Fase 0: Configuração inicial (feita por você, manualmente)
+## Fase 0: Pré-requisitos
 
-### 0.1 Programas no Windows
-
-1. **Git for Windows:** baixe em git-scm.com e instale com as opções padrão.
-2. **VS Code** (ou outro editor): code.visualstudio.com. Instale a extensão "Python".
-3. **uv:** abra o PowerShell e rode:
-   ```powershell
-   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-   ```
-   Feche e reabra o PowerShell e confirme com `uv --version`.
-4. **Python 3.12 pelo uv:**
-   ```powershell
-   uv python install 3.12
-   ```
-5. Configure seu nome no Git, se ainda não fez:
-   ```powershell
-   git config --global user.name "Seu Nome"
-   git config --global user.email "seu-email-do-github"
-   ```
-
-### 0.2 Chave da Anthropic (Claude Haiku)
-
-1. Crie uma conta em **console.anthropic.com**.
-2. Na área de cobrança (Billing), adicione créditos. O valor mínimo de compra aparece na tela. Para este projeto, a menor recarga disponível sobra. Pela minha estimativa, cada relatório custa menos de 1 centavo de dólar.
-3. **Defina um limite de gastos** (spend limit) na área de limites da conta. Isso evita surpresas.
-4. Na área **API Keys**, crie uma chave chamada `healthwatch-srag-agent`. Ela só aparece uma vez, então copie-a direto para o arquivo `.env` (passo 0.5).
-
-### 0.3 Chave da Tavily (notícias)
-
-1. Crie uma conta em **app.tavily.com**. O plano gratuito dá 1.000 créditos por mês e não pede cartão.
-2. Copie a chave da API para o `.env`.
-
-### 0.4 Clonar o repositório
-
-```powershell
-cd $HOME\Documents
-git clone https://github.com/<seu-usuario>/healthwatch-srag-agent.git
-cd healthwatch-srag-agent
-```
-
-### 0.5 Copiar os documentos deste plano e criar o `.env`
-
-1. Copie para a raiz do repositório os arquivos que gerei: `CLAUDE.md`, `README.md`, `.env.example`, `.gitignore` e a pasta `docs/`.
-2. Crie o `.env` a partir do exemplo:
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-3. Abra o `.env` no editor e cole as duas chaves.
-
-> ⚠️ **Regras de segurança das chaves:**
-> - Nunca cole uma chave em chat (inclusive comigo), em código, em issue ou em print de tela.
-> - Confira que o `.env` **não aparece** em `git status`. Se aparecer, pare e corrija o `.gitignore`.
-> - Se uma chave vazar, revogue-a no painel e crie outra.
-
-### 0.6 Baixar os dados
-
-1. Acesse a página do dataset no Open DATASUS (link no enunciado).
-2. **Confira se há arquivos mais recentes** (2025, 2026). Quanto mais recentes os dados, melhor o relatório "em tempo real". Se houver, use os dois anos mais recentes, porque o gráfico de 12 meses pode precisar de dados do ano anterior.
-3. Baixe o(s) CSV(s) para `data/raw/`.
-4. Baixe também o **dicionário de dados (PDF)** e guarde em `docs/reference/` (este PDF é público e pode ir para o repositório).
-
-**Pronto quando:**
-- [ ] `uv --version` e `git --version` funcionam
-- [ ] `.env` preenchido e fora do `git status`
-- [ ] Limite de gastos definido na Anthropic
-- [ ] CSV(s) em `data/raw/` e dicionário em `docs/reference/`
+Ambiente com Git, uv e Python 3.12; chaves da Anthropic e da Tavily (somente no `.env`, fora do Git); arquivos do Open DATASUS em `data/raw/` e o dicionário de dados em `docs/reference/`.
 
 ---
 
@@ -119,10 +53,10 @@ cd healthwatch-srag-agent
 7. Crie `.github/workflows/ci.yml`, que roda `uv sync`, `ruff check`, `ruff format --check` e `pytest` em cada push e pull request.
 8. Escreva um teste mínimo (`tests/test_config.py`) para o CI ter o que rodar.
 
-**Pronto quando:**
-- [ ] `uv run pytest` passa localmente
-- [ ] CI verde no GitHub
-- [ ] `uv.lock` commitado; `.env` e `data/` fora do Git
+**Critérios de aceite:**
+- `uv run pytest` passa localmente
+- CI verde no GitHub
+- `uv.lock` commitado; `.env` e `data/` fora do Git
 
 ---
 
@@ -166,10 +100,10 @@ Lê `data/raw/*.csv` só com as colunas selecionadas, limpa, grava `data/process
 ### 2.5 Repositório de dados (`data/repository.py`)
 Funções com parâmetros fixos sobre o DuckDB em memória, com acesso a arquivos desligado e configuração travada (veja D-012), como `count_cases_by_day(uf, start, end)`. Nada de SQL montado com texto vindo do LLM.
 
-**Pronto quando:**
-- [ ] `uv run python -m srag.data.prepare` gera o Parquet e o relatório de qualidade
-- [ ] Testes de limpeza com uma fixture sintética (`tests/fixtures/srag_sample.csv`, cerca de 50 linhas inventadas)
-- [ ] Lista de colunas mantidas e descartadas, com justificativa, anotada para o README
+**Critérios de aceite:**
+- `uv run python -m srag.data.prepare` gera o Parquet e o relatório de qualidade
+- Testes de limpeza com uma fixture sintética (`tests/fixtures/srag_sample.csv`, cerca de 50 linhas inventadas)
+- Lista de colunas mantidas e descartadas, com justificativa, anotada para o README
 
 ---
 
@@ -181,10 +115,10 @@ Funções com parâmetros fixos sobre o DuckDB em memória, com acesso a arquivo
 2. Calcule a data de referência D, a janela atual, a janela anterior e a janela de atraso a partir do `config.py`.
 3. Faça testes para cada métrica: caso normal, denominador zero, todos os valores ignorados, sinalização de instabilidade e limites das janelas.
 
-**Pronto quando:**
-- [ ] As 4 métricas (e a de vacinação contra gripe, secundária) retornam `MetricResult`
-- [ ] Testes cobrem os casos de borda
-- [ ] Valores conferidos manualmente para Brasil e para uma UF, com uma consulta independente no notebook
+**Critérios de aceite:**
+- As 4 métricas (e a de vacinação contra gripe, secundária) retornam `MetricResult`
+- Testes cobrem os casos de borda
+- Valores conferidos para Brasil e para uma UF com uma consulta independente
 
 ---
 
@@ -197,9 +131,9 @@ Funções com parâmetros fixos sobre o DuckDB em memória, com acesso a arquivo
 3. Títulos, eixos e legendas em português, com o escopo (Brasil ou UF) e a data de referência.
 4. Os testes verificam a **série de dados** (30 pontos diários e 12 mensais) e se o arquivo foi criado, sem comparar imagens.
 
-**Pronto quando:**
-- [ ] Os dois PNGs são gerados para Brasil e para uma UF
-- [ ] Períodos incompletos aparecem marcados
+**Critérios de aceite:**
+- Os dois PNGs são gerados para Brasil e para uma UF
+- Períodos incompletos aparecem marcados
 
 ---
 
@@ -217,10 +151,10 @@ Funções com parâmetros fixos sobre o DuckDB em memória, com acesso a arquivo
 4. A consulta inclui o nome do estado quando houver UF.
 5. Testes com respostas falsas da Tavily, incluindo uma notícia com tentativa de prompt injection.
 
-**Pronto quando:**
-- [ ] A busca real funciona com a chave (teste manual)
-- [ ] Testes do sanitizador passam, incluindo o caso de injection
-- [ ] Sem notícias válidas, a ferramenta retorna uma lista vazia, sem erro
+**Critérios de aceite:**
+- A busca real funciona com a chave (teste real)
+- Testes do sanitizador passam, incluindo o caso de injection
+- Sem notícias válidas, a ferramenta retorna uma lista vazia, sem erro
 
 ---
 
@@ -245,9 +179,9 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
 4. **Limites:** contador de iterações, controle de custo acumulado e timeout.
 5. Testes para cada guardrail, com um caso que passa e um que falha.
 
-**Pronto quando:**
-- [ ] Uma execução de teste gera `audit.jsonl` e `manifest.json` legíveis
-- [ ] Todos os guardrails têm testes de aprovação e de reprovação
+**Critérios de aceite:**
+- Uma execução de teste gera `audit.jsonl` e `manifest.json` legíveis
+- Todos os guardrails têm testes de aprovação e de reprovação
 
 ---
 
@@ -277,11 +211,11 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
 5. Use `ChatAnthropic` com o modelo, a temperatura e o máximo de tokens do `config.py`. Capture o uso de tokens de cada resposta para a auditoria.
 6. **Teste de ponta a ponta** com LLM falso (`langchain_core` tem modelos falsos) e Tavily falsa.
 
-**Pronto quando:**
-- [ ] Execução real para Brasil e para uma UF produz o texto e passa no guardrail de saída
-- [ ] Execução real com custo registrado na auditoria
-- [ ] Teste de ponta a ponta com fakes passa no CI
-- [ ] Caminho de fallback testado
+**Critérios de aceite:**
+- Execução real para Brasil e para uma UF produz o texto e passa no guardrail de saída
+- Execução real com custo registrado na auditoria
+- Teste de ponta a ponta com fakes passa no CI
+- Caminho de fallback testado
 
 ---
 
@@ -302,9 +236,9 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
 3. **`report/pdf.py`:** abre o HTML no Chromium (Playwright) e salva em A4.
 4. **`service.py`:** `generate_report(uf) -> ReportResult` liga tudo: validação, grafo, renderização, PDF e manifesto.
 
-**Pronto quando:**
-- [ ] `report.html` e `report.pdf` são gerados e legíveis, com as 8 seções
-- [ ] O PDF abre corretamente no Windows
+**Critérios de aceite:**
+- `report.html` e `report.pdf` são gerados e legíveis, com as 8 seções
+- O PDF abre corretamente no Windows
 
 ---
 
@@ -320,9 +254,9 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
    - um painel expansível **"Auditoria desta execução"** que mostra o `audit.jsonl` em tabela, o que deixa a transparência visível para quem avalia.
 3. Ambos chamam apenas `service.generate_report`.
 
-**Pronto quando:**
-- [ ] `uv run python -m srag --uf SP` funciona
-- [ ] O Streamlit gera, exibe e baixa o relatório, e mostra a auditoria
+**Critérios de aceite:**
+- `uv run python -m srag --uf SP` funciona
+- O Streamlit gera, exibe e baixa o relatório, e mostra a auditoria
 
 ---
 
@@ -332,8 +266,8 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
 2. Confira se o diagrama mostra: **orquestrador**, **ferramentas**, **interações com o LLM**, **banco de dados**, **fonte de notícias**, guardrails e auditoria.
 3. Salve como `docs/architecture.pdf` e `docs/architecture.png`. O PNG vai embutido no README, porque o GitHub não exibe PDF dentro do texto.
 
-**Pronto quando:**
-- [ ] `docs/architecture.pdf` existe e mostra os 5 elementos exigidos
+**Critérios de aceite:**
+- `docs/architecture.pdf` existe e mostra os 5 elementos exigidos
 
 ---
 
@@ -343,31 +277,31 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
 2. Preencha todos os `TODO` do `README.md`: visão geral, componentes, como rodar, governança (exemplo de linha da auditoria), tabela de guardrails, colunas mantidas e descartadas, estrutura, limitações.
 3. Teste o passo a passo do README em uma pasta nova (clone limpo), como se fosse a pessoa avaliadora.
 4. Revise o `DECISIONS.md` e acrescente o que mudou durante o desenvolvimento.
-5. Deixe o repositório **público** e confira que não há segredos no histórico. Uma busca rápida: `git log -p | Select-String "sk-ant"`.
-6. Adicione descrição e tópicos no GitHub.
+5. Repositório público, com o histórico conferido para garantir que não há segredos.
+6. Descrição e tópicos no GitHub.
 
 ---
 
-## Matriz de requisitos (confira antes de entregar)
+## Matriz de requisitos 
 
 | Requisito / critério | Onde é atendido | ✓ |
 |---|---|---|
-| Taxa de aumento de casos | `metrics/calculations.py`, relatório seção 3 | [ ] |
-| Taxa de mortalidade | idem | [ ] |
-| Taxa de ocupação de UTI (proxy declarado) | idem e `METRICS.md` | [ ] |
-| Taxa de vacinação (proxy declarado) | idem e `METRICS.md` | [ ] |
-| Gráfico diário dos últimos 30 dias | `charts/plots.py`, relatório seção 4 | [ ] |
-| Gráfico mensal dos últimos 12 meses | idem | [ ] |
-| Notícias em tempo real embasando as explicações | `news/`, relatório seções 5 e 7 | [ ] |
-| Agente orquestrador com ferramentas e LLM | `agent/graph.py` | [ ] |
-| Dados reais do Open DATASUS, com colunas selecionadas e tratadas | `data/` e relatório de qualidade | [ ] |
+| Taxa de aumento de casos | `metrics/calculations.py`, relatório seção 3 | [x] |
+| Taxa de mortalidade | idem | [x] |
+| Taxa de ocupação de UTI (proxy declarado) | idem e `METRICS.md` | [x] |
+| Taxa de vacinação (proxy declarado) | idem e `METRICS.md` | [x] |
+| Gráfico diário dos últimos 30 dias | `charts/plots.py`, relatório seção 4 | [x] |
+| Gráfico mensal dos últimos 12 meses | idem | [x] |
+| Notícias em tempo real embasando as explicações | `news/`, relatório seções 5 e 7 | [x] |
+| Agente orquestrador com ferramentas e LLM | `agent/graph.py` | [x] |
+| Dados reais do Open DATASUS, com colunas selecionadas e tratadas | `data/` e relatório de qualidade | [x] |
 | Repositório público com README completo | GitHub | [ ] |
-| PDF do diagrama de arquitetura | `docs/architecture.pdf` | [ ] |
-| **Arquitetura** | Grafo, módulos e `DECISIONS.md` | [ ] |
-| **Governança e transparência** | `audit.jsonl`, `manifest.json`, rodapé do relatório, painel no Streamlit | [ ] |
-| **Guardrails** | `guardrails/`, `news/sanitizer.py`, limites do agente | [ ] |
-| **Dados sensíveis** | Colunas descartadas, só agregados, `.env`, seção no README | [ ] |
-| **Clean code** | ruff, testes, CI, tipagem, funções pequenas | [ ] |
+| PDF do diagrama de arquitetura | `docs/architecture.pdf` | [x] |
+| **Arquitetura** | Grafo, módulos e `DECISIONS.md` | [x] |
+| **Governança e transparência** | `audit.jsonl`, `manifest.json`, rodapé do relatório, painel no Streamlit | [x] |
+| **Guardrails** | `guardrails/`, `news/sanitizer.py`, limites do agente | [x] |
+| **Dados sensíveis** | Colunas descartadas, só agregados, `.env`, seção no README | [x] |
+| **Clean code** | ruff, testes, CI, tipagem, funções pequenas | [x] |
 
 ---
 
@@ -379,5 +313,5 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
 | CSV grande demais para a memória | Ler só as colunas selecionadas (`usecols`) e com tipos definidos |
 | Notícias recentes não falam dos dados antigos | O prompt pede para diferenciar o "cenário dos dados" do "cenário atual das notícias", e o relatório explica a diferença |
 | Instalação do Playwright bloqueada por rede corporativa | Opção `--no-pdf` (só HTML) documentada |
-| Esquecer o `.env` no commit | `.gitignore` e hook de pre-commit; conferir `git status` antes de cada commit |
+| Commit acidental do `.env` | `.gitignore` e hook de pre-commit (`detect-private-key`) |
 | Gasto inesperado de API | Limite de gastos no painel e `MAX_COST_USD_PER_RUN` |

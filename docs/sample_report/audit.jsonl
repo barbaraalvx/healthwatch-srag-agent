@@ -1,0 +1,16 @@
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:24.052+00:00", "event_type": "node_start", "node": "orchestrator"}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:25.722+00:00", "event_type": "llm_call", "node": "orchestrator", "output_summary": {"tool_calls": ["get_metrics", "get_case_series", "search_news"]}, "model": "claude-haiku-5-5", "prompt_version": "orchestrator_v1", "tokens_in": 1120, "tokens_out": 108, "cost_usd": 0.000166, "duration_ms": 1672}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:25.724+00:00", "event_type": "node_end", "node": "orchestrator", "duration_ms": 1672}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:25.726+00:00", "event_type": "node_start", "node": "tools"}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:25.783+00:00", "event_type": "tool_call", "node": "get_metrics", "inputs": {}, "output_summary": {"metrics": 5, "reference_date": "2026-11-15"}, "duration_ms": 62}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:26.435+00:00", "event_type": "tool_call", "node": "get_case_series", "inputs": {}, "output_summary": {"charts": 2}, "duration_ms": 639}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:27.305+00:00", "event_type": "tool_call", "node": "search_news", "inputs": {"query": "SRAG aumento de casos internações"}, "output_summary": {"query": "SRAG aumento de casos internações Brasil", "kept": 5, "discarded": {}, "sentences_removed": 0}, "duration_ms": 875}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:27.306+00:00", "event_type": "node_end", "node": "tools", "duration_ms": 1577}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:27.309+00:00", "event_type": "node_start", "node": "required_tools_check"}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:27.310+00:00", "event_type": "node_end", "node": "required_tools_check", "duration_ms": 0}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:27.311+00:00", "event_type": "node_start", "node": "writer"}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:35.111+00:00", "event_type": "llm_call", "node": "writer", "output_summary": {"tool_calls": []}, "model": "claude-haiku-5-5", "prompt_version": "writer_v1", "tokens_in": 3422, "tokens_out": 1791, "cost_usd": 0.0012377, "duration_ms": 7812}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:35.113+00:00", "event_type": "node_end", "node": "writer", "duration_ms": 7812}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:35.115+00:00", "event_type": "node_start", "node": "output_guardrail"}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:35.119+00:00", "event_type": "guardrail", "node": "output_guardrail", "output_summary": {"errors": 0}, "decision": "pass", "reason": "all checks passed"}
+{"run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d", "timestamp": "2026-11-22T17:45:35.120+00:00", "event_type": "node_end", "node": "output_guardrail", "duration_ms": 0}
