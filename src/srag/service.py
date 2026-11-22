@@ -18,7 +18,7 @@ from srag.data.repository import CaseRepository
 from srag.guardrails.input import validate_request
 from srag.guardrails.limits import RunLimits
 from srag.news.client import NewsSearcher, TavilyNewsSearcher
-from srag.report.context import RunDetails, build_report_context
+from srag.report.context import ReportContext, RunDetails, build_report_context
 from srag.report.pdf import PdfGenerationError, html_to_pdf
 from srag.report.renderer import render_report
 
@@ -31,6 +31,10 @@ SERVICE_NODE = "service"
 PROMPT_VERSIONS = {"orchestrator": ORCHESTRATOR_PROMPT, "writer": WRITER_PROMPT}
 
 
+class DataNotPreparedError(FileNotFoundError):
+    """Raised when the processed data file does not exist yet."""
+
+
 @dataclass(frozen=True)
 class ReportResult:
     """Where the report of one run was written and how the run ended."""
@@ -41,6 +45,9 @@ class ReportResult:
     pdf_path: Path | None
     audit_path: Path
     manifest_path: Path
+    daily_chart: Path
+    monthly_chart: Path
+    report: ReportContext
     status: str
     stop_reason: str | None
 
@@ -60,6 +67,7 @@ def generate_report(
     """
     request = validate_request(uf)
     settings = settings or get_settings()
+    _require_prepared_data(settings)
     audit = AuditLogger.create(settings.reports_dir, secrets=_secrets(settings))
     try:
         result = _run_agent(request.uf, settings, audit, llm, searcher)
@@ -68,7 +76,8 @@ def generate_report(
         audit.write_manifest(_manifest_info(request.uf, settings), STATUS_ERROR)
         raise
     generated_at = datetime.now(UTC)
-    html_path = _write_html(result, audit, settings, generated_at)
+    context = _build_context(result, audit, settings, generated_at)
+    html_path = _write_html(context, audit.run_dir)
     pdf_path = _write_pdf(html_path, audit) if with_pdf else None
     manifest_path = audit.write_manifest(
         _manifest_info(request.uf, settings, result.snapshot.reference_date), result.status
@@ -80,6 +89,9 @@ def generate_report(
         pdf_path=pdf_path,
         audit_path=audit.audit_path,
         manifest_path=manifest_path,
+        daily_chart=result.daily_chart,
+        monthly_chart=result.monthly_chart,
+        report=context,
         status=result.status,
         stop_reason=result.stop_reason,
     )
@@ -106,9 +118,9 @@ def _run_agent(
         return run_agent(deps, uf)
 
 
-def _write_html(
+def _build_context(
     result: AgentResult, audit: AuditLogger, settings: Settings, generated_at: datetime
-) -> Path:
+) -> ReportContext:
     run = RunDetails(
         run_id=audit.run_id,
         generated_at=generated_at,
@@ -116,8 +128,12 @@ def _write_html(
         effort=settings.llm_effort,
         prompt_versions=PROMPT_VERSIONS,
     )
-    html_path = audit.run_dir / HTML_FILENAME
-    html_path.write_text(render_report(build_report_context(result, run)), encoding="utf-8")
+    return build_report_context(result, run)
+
+
+def _write_html(context: ReportContext, run_dir: Path) -> Path:
+    html_path = run_dir / HTML_FILENAME
+    html_path.write_text(render_report(context), encoding="utf-8")
     return html_path
 
 
@@ -143,6 +159,14 @@ def _manifest_info(
         data_file=data_file if data_file.exists() else None,
         data_max_date=data_max_date,
     )
+
+
+def _require_prepared_data(settings: Settings) -> None:
+    if not settings.data_processed_path.exists():
+        raise DataNotPreparedError(
+            f"Processed data not found at {settings.data_processed_path}. "
+            "Run: uv run python -m srag.data.prepare"
+        )
 
 
 def _secrets(settings: Settings) -> list[str]:
