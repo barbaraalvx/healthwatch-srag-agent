@@ -80,7 +80,7 @@ def test_there_is_one_card_per_metric_with_formatted_values(make_result, snapsho
 
     assert len(context.cards) == len(snapshot.metrics) == 5
     growth = context.cards[0]
-    assert growth.title == "Variação de casos"
+    assert growth.title == "Taxa de aumento de casos"
     assert growth.value.endswith("%") and "," in growth.value
     assert growth.completeness is None
     assert context.cards[1].completeness is not None
@@ -146,7 +146,7 @@ def test_four_primary_cards_and_the_secondary_flu_metric(make_result):
     context = build_report_context(make_result(), RUN)
 
     assert [card.primary for card in context.cards] == [True, True, True, True, False]
-    assert context.cards[-1].title == "Vacinados contra gripe (proxy)"
+    assert context.cards[-1].title == "Taxa de vacinação gripe (proxy)"
 
 
 def test_case_growth_card_shows_the_direction_of_the_change(make_result):
@@ -176,3 +176,21 @@ def test_quick_links_point_to_the_files_of_the_run(make_result):
 
     for target in ("report.pdf", "audit.jsonl", "manifest.json"):
         assert f'href="{target}"' in html
+
+
+def test_cards_use_the_metric_names_of_the_brief(make_result):
+    titles = [card.title for card in build_report_context(make_result(), RUN).cards]
+
+    assert titles[:3] == [
+        "Taxa de aumento de casos",
+        "Taxa de mortalidade",
+        "Taxa de ocupação de UTI (proxy)",
+    ]
+    assert titles[3].startswith("Taxa de vacinação")
+
+
+def test_proxy_cards_carry_their_limitation_note(make_result):
+    html = render(make_result())
+
+    assert "Não é a ocupação de leitos" in html
+    assert "Não é a cobertura vacinal da população" in html

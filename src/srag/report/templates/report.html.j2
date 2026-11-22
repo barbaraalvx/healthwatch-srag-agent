@@ -32,10 +32,10 @@
     --sand: #e6d8c6;
     --blue-grey: #a9b4c2;
     --rose: #c9a39a;
-    --muted: #7a7268;
+    --muted: #6b6359;
     --line: #e6d8c6;
-    --good: #6b8f71;
-    --bad: #b5655c;
+    --good: #4a7152;
+    --bad: #a04f46;
     --rose-soft: #efddd8;
     --font-title: "Playfair Display", "Cormorant Garamond", Georgia, "Times New Roman", serif;
     --font-body: Inter, Lato, "Segoe UI", "DejaVu Sans", Arial, sans-serif;
@@ -130,6 +130,7 @@
   .kpi .label { color: var(--muted); font-size: 12px; }
   .kpi .value { font-size: 34px; font-weight: 700; line-height: 1.1; }
   .kpi .detail { color: var(--muted); font-size: 11.5px; margin: 2px 0 0; }
+  .kpi .note { margin-top: 8px; }
   .trend { margin: 2px 0 0; font-size: 12px; font-weight: 600; }
   .trend span { font-weight: 400; color: var(--muted); }
   .trend-down { color: var(--good); }
@@ -245,6 +246,7 @@
           <p class="detail">{{ card.basis }}</p>
           {% if card.completeness %}<p class="detail">Completude: {{ card.completeness }}</p>{% endif %}
           {% if card.unstable %}<p><span class="tag warn">Amostra pequena: resultado instável</span></p>{% endif %}
+          {% if card.note %}<p class="detail note">{{ card.note }}</p>{% endif %}
           {% if loop.last %}
           {% for other in report.cards|rejectattr("primary") %}
           <div class="secondary">
@@ -252,6 +254,7 @@
             <span class="value">{{ other.value }}</span>
             <p class="detail">{{ other.basis }}</p>
             {% if other.unstable %}<p><span class="tag warn">Amostra pequena: resultado instável</span></p>{% endif %}
+            {% if other.note %}<p class="detail note">{{ other.note }}</p>{% endif %}
           </div>
           {% endfor %}
           {% endif %}

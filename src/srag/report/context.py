@@ -45,11 +45,11 @@ METRIC_ICONS: dict[str, str] = {
 }
 
 METRIC_TITLES: dict[str, str] = {
-    CASE_GROWTH_RATE: "Variação de casos",
-    MORTALITY_RATE: "Mortalidade",
-    ICU_ADMISSION_RATE: "Internações em UTI (proxy)",
-    COVID_VACCINATION_RATE: "Vacinados contra COVID-19 (proxy)",
-    FLU_VACCINATION_RATE: "Vacinados contra gripe (proxy)",
+    CASE_GROWTH_RATE: "Taxa de aumento de casos",
+    MORTALITY_RATE: "Taxa de mortalidade",
+    ICU_ADMISSION_RATE: "Taxa de ocupação de UTI (proxy)",
+    COVID_VACCINATION_RATE: "Taxa de vacinação COVID-19 (proxy)",
+    FLU_VACCINATION_RATE: "Taxa de vacinação gripe (proxy)",
 }
 
 
