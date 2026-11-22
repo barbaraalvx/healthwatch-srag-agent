@@ -144,3 +144,19 @@ Template:
   - Prompts are versioned files (`orchestrator_v1.md`, `writer_v1.md`); their names are recorded in each `llm_call` audit event.
 - Alternatives: A plain ReAct loop with the model choosing everything (harder to audit, can skip required steps); giving the orchestrator the news titles to judge relevance (a larger injection surface for the model that has tools); letting the model pick the UF (can drift to another state); always running a second orchestrator turn (one more paid call in the common case).
 - Consequences: A typical run costs two model calls (orchestrator and writer) and one news search. A refinement or a writer retry adds one call. The fixed scope means a question about two states needs two runs. The writer output is only as good as its prompt: the tolerance of 0.1 points in the output guardrail means it must copy the numbers as given, which the prompt demands. In the first real run a draft hit the 2,000-token cap in the middle of a link (reasoning tokens count as output). A draft that stopped because of the token limit is now rejected with an explicit reason and rewritten shorter, and the default cap is 4,000 tokens.
+
+## D-017 - Report rendering: safe Markdown, standalone HTML, optional PDF
+- Date: 2026-11-22
+- Status: Accepted
+- Context: Phase 8 turns the agent result into HTML and PDF. The LLM text and the news titles are untrusted, and an evaluator must be able to open the report on its own.
+- Decision:
+  - The writer text stays Markdown. It is split by its `##` headings and converted with `markdown-it-py` with raw HTML disabled (so `<script>` is escaped and `javascript:` links are refused). Everything else in the Jinja2 template is auto-escaped.
+  - The medical disclaimer is removed from the text body and shown once, in the footer, from the same constant the guardrail checks.
+  - Charts are embedded as base64, so `report.html` works alone. The PDF is made from that HTML with headless Chromium (Playwright), A4.
+  - The PDF is optional: if Chromium is missing or fails, the HTML report is still delivered, the error is written to the audit log and `pdf_path` is `None`.
+  - `generate_report(uf)` creates the run folder only after the request is validated. If the run fails, the error is audited and the manifest is written with status `error` before the exception is re-raised.
+  - A fallback or stopped run still produces the full report (metrics, charts, notes, sources) with a visible notice that the automatic text is unavailable.
+  - The methodology notes are fixed text (a summary of `docs/METRICS.md`), not written by the model.
+- Alternatives: A hand-written Markdown converter (more code and easier to get wrong); letting the model write HTML (injection risk and harder to validate); WeasyPrint for the PDF (needs system libraries that are hard to install on Windows).
+- Consequences: Chromium (about 120 MB) must be installed once with `uv run playwright install chromium`; CI installs it too. The report page is the only place with the full text, so the Streamlit UI (Phase 9) will reuse the same `ReportResult`.
+
