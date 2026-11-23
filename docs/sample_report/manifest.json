@@ -1,7 +1,7 @@
 {
-  "run_id": "8fb930cc-df4b-45c1-800e-ac39cf85529d",
-  "started_at": "2026-11-22T17:45:23+00:00",
-  "finished_at": "2026-11-22T17:45:37+00:00",
+  "run_id": "dacbe50f-8d4d-4b0b-8122-cc14287511f3",
+  "started_at": "2026-11-23T12:56:25+00:00",
+  "finished_at": "2026-11-23T12:56:47+00:00",
   "status": "completed",
   "scope": "BR",
   "model": "claude-haiku-5-5",
@@ -12,11 +12,11 @@
   },
   "data_file_sha256": "7b2c221e0261b5952200886392ee14e2a62370ff3a648d845fed5c72386c99ee",
   "data_max_date": "2026-11-15",
-  "git_commit": "387e68228bd447bd879324ee2f6cdede2a7662d2",
+  "git_commit": "6d81dedf67444447d6d63f1dd65455467c63295c",
   "totals": {
     "events": 16,
-    "tokens_in": 4542,
-    "tokens_out": 1899,
-    "cost_usd": 0.001404
+    "tokens_in": 4574,
+    "tokens_out": 2160,
+    "cost_usd": 0.001537
   }
 }
