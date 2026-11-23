@@ -295,7 +295,7 @@ Construa isto **antes** do agente, para que ele já nasça auditado.
 | Notícias em tempo real embasando as explicações | `news/`, relatório seções 5 e 7 | [x] |
 | Agente orquestrador com ferramentas e LLM | `agent/graph.py` | [x] |
 | Dados reais do Open DATASUS, com colunas selecionadas e tratadas | `data/` e relatório de qualidade | [x] |
-| Repositório público com README completo | GitHub | [ ] |
+| Repositório público com README completo | GitHub | [x] |
 | PDF do diagrama de arquitetura | `docs/architecture.pdf` | [x] |
 | **Arquitetura** | Grafo, módulos e `DECISIONS.md` | [x] |
 | **Governança e transparência** | `audit.jsonl`, `manifest.json`, rodapé do relatório, painel no Streamlit | [x] |
