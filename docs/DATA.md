@@ -1,6 +1,6 @@
 # Data handling
 
-Source: Open DATASUS, SRAG hospitalized cases (SIVEP-Gripe). Files `INFLUD25` and `INFLUD26` (extracted 2026-11-16), 194 columns and about 585,000 rows together. Data dictionary: `docs/reference/dicionario-de-dados-2019-a-2025.pdf` (version of 25/05/2023; the codes used here were checked against it and against the real values).
+Source: Open DATASUS, SRAG hospitalized cases (SIVEP-Gripe). Files `INFLUD25` and `INFLUD26` (extracted 2026-11-16), 194 columns and about 585,000 rows together. Data dictionary: `docs/reference/dicionario-de-dados-2019-a-2025.pdf` (version of 25/05/2023; the codes used here were checked against it and against the real values). No separate dictionary for 2026 was found; the columns and codes used were also checked directly against the `INFLUD26` file, which uses the same layout.
 
 Raw files are never committed (`data/` is git-ignored). Run `uv run python -m srag.data.prepare` to build `data/processed/srag.parquet` and `data/processed/quality_report.json`.
 

@@ -79,7 +79,7 @@ cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
 # edit .env and fill ANTHROPIC_API_KEY and TAVILY_API_KEY
 ```
 
-Data: download the SRAG CSV file(s) from [Open DATASUS](https://opendatasus.saude.gov.br/dataset/srag-2021-a-2024) into `data/raw/` (the sample report used `INFLUD25` and `INFLUD26`), then:
+Data: from the [Open DATASUS SRAG 2019 to 2026 dataset](https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026), download the CSV files the sample report used, one per year: [2025 (`INFLUD25`)](https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/20c49de3-ddc3-4b76-a942-1518eaae9c91) and [2026 (`INFLUD26`)](https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/74091efc-3f75-42e8-a6fa-6b79a8d30582). Put them in `data/raw/`, then:
 
 ```bash
 uv run python -m srag.data.prepare
@@ -104,10 +104,10 @@ Each run gets a `run_id` (UUID4) and its own folder, `reports/<timestamp>_<run_i
 - The report footer repeats the `run_id`, generation time, data date and model.
 - The Streamlit app shows the audit table of the run in an expander.
 
-Example line from [`docs/sample_report/audit.jsonl`](docs/sample_report/audit.jsonl) (real run, about US$ 0.0014 in total):
+Example line from [`docs/sample_report/audit.jsonl`](docs/sample_report/audit.jsonl) (real run, about US$ 0.0015 in total):
 
 ```json
-{"run_id": "8fb930cc-...", "event_type": "llm_call", "node": "orchestrator", "output_summary": {"tool_calls": ["get_metrics", "get_case_series", "search_news"]}, "model": "claude-haiku-5-5", "prompt_version": "orchestrator_v1", "tokens_in": 1120, "tokens_out": 108, "cost_usd": 0.000166, "duration_ms": 1672}
+{"run_id": "dacbe50f-...", "event_type": "llm_call", "node": "orchestrator", "output_summary": {"tool_calls": ["get_metrics", "get_case_series", "search_news"]}, "model": "claude-haiku-5-5", "prompt_version": "orchestrator_v1", "tokens_in": 1120, "tokens_out": 108, "cost_usd": 0.000166, "duration_ms": 1983}
 ```
 
 Inspect a run with `cat reports/<folder>/audit.jsonl` (PowerShell: `Get-Content`). Only aggregates and truncated text are logged, never row-level data or secrets.
